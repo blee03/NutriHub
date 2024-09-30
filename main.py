@@ -1,15 +1,19 @@
-import os
-
-from flask import Flask, send_file
-
-app = Flask(__name__)
+from fileinput import filename 
+from flask import *  
+app = Flask(__name__) 
 
 @app.route("/")
-def index():
-    return send_file('src/index.html')
-
 def main():
-    app.run(port=int(os.environ.get('PORT', 80)))
+    return render_template('upload.html')
 
-if __name__ == "__main__":
-    main()
+@app.route("/result", methods = ['POST'])
+def result():
+    if request.method == 'POST':
+        f = request.files['file']
+        print(f.filename)
+        print(f)
+        f.save(f.filename)
+        return render_template('result.html', name = f.filename)
+
+if __name__ == '__main__':
+    app.run()
