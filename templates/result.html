@@ -1,15 +1,42 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>NutriHub</title> 
+        
+        <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+        .grid-item {
+            height: 200px
+        }
+        </style>
+    </head>
 <body>
 
-<p>File uploaded</p>
-<p>File: {{name}}</p>
 
-<p>Upload more files:</p>
-<form action = "/result" method = "post" enctype="multipart/form-data">   
-    <input type="file" name="file" />   
-    <input type = "submit" value="Upload">   
-</form>  
+<div class="grid-container">
+    <div class="grid-item"> 
+
+        <b>Upload files:</b>
+        <form action = "/result" method = "post" enctype="multipart/form-data">   
+            <input type="file" name="file" />   
+            <input type = "submit" value="Upload">   
+        </form>  
+
+    </div>
+
+    <div class="grid-item">
+        
+        <b>Uploaded files:</b>
+        {% for file in fileList %}
+            <p>{{ file }} </p>
+        {% endfor %}
+
+
+    </div>
+</div>
 
 </body>
 </html>
