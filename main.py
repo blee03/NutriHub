@@ -1,6 +1,11 @@
 from fileinput import filename 
 from flask import *  
+from werkzeug.utils import secure_filename
+import os
+
 app = Flask(__name__) 
+
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 @app.route("/")
 def main():
@@ -10,9 +15,8 @@ def main():
 def result():
     if request.method == 'POST':
         f = request.files['file']
-        print(f.filename)
-        print(f)
-        f.save(f.filename)
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return render_template('result.html', name = f.filename)
 
 if __name__ == '__main__':
