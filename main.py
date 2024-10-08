@@ -9,7 +9,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 
 @app.route("/")
 def main():
-    return render_template('upload.html')
+    return render_template('upload.html', fileList = os.listdir('uploads'))
 
 @app.route("/result", methods = ['POST'])
 def result():
@@ -17,7 +17,7 @@ def result():
         f = request.files['file']
         filename = secure_filename(f.filename)
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return render_template('result.html', name = f.filename)
+        return render_template('result.html', name = f.filename, fileList = os.listdir('uploads'))
 
 if __name__ == '__main__':
     app.run()
