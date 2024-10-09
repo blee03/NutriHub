@@ -18,7 +18,6 @@ Run the app
 ```
 flask --app main run
 ```
+### Jira
 
-This project also uses tailwind CSS
-
-https://tailwindcss.com/docs/installation 
+https://4574groupd.atlassian.net/jira/software/projects/NH/boards/2
