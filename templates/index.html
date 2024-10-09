@@ -25,8 +25,10 @@
         </h1>
         <div class="grid-item">
 
-            <b>Upload files:</b>
+            <b>Upload files:</b><br><br>
             <form action="/result" method="post" enctype="multipart/form-data">
+                <label for="fname">File name:</label>
+                <input type="text" id="fname" name="fname"><br><br>
                 <input type="file" name="file" />
                 <input type="submit" value="Upload">
             </form>
