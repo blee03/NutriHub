@@ -18,3 +18,7 @@ Run the app
 ```
 flask --app main run
 ```
+
+This project also uses tailwind CSS
+
+https://tailwindcss.com/docs/installation 
