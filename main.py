@@ -26,7 +26,7 @@ def result():
         filename = request.form.get('fname')
         extension = os.path.splitext(f.filename)[1]
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        return render_template('index.html', name = f.filename, fileList = os.listdir('uploads'))
+        return render_template('upload.html', name = f.filename, fileList = os.listdir('uploads'))
 
 if __name__ == '__main__':
     app.run()

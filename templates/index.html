@@ -32,14 +32,28 @@
         </div>
     </nav>
 
-    <!--SELECT A MEAL-->
-    <b>Select a meal:</b>
-    <select class="form-select" aria-label="Default select example">
-        <option selected>Open this select menu</option>
-        {% for file in fileList %}
-            <option value="1">{{file}}</option>
-        {% endfor %}
-      </select>
+    <div class="container text-center">
+        <div class="row align-items-start">
+          <div class="col">
+                <!--SELECT A MEAL-->
+                <b>Select a meal:</b>
+                <select class="form-select" aria-label="Default select example">
+                    <option selected>Open this select menu</option>
+                    {% for file in fileList %}
+                        <option value="1">{{file}}</option>
+                    {% endfor %}
+                </select>
+                <!--ENTER SERVINGS-->
+                <form action="/result" method="post" enctype="multipart/form-data">
+                    <label for="fname">Servings:</label>
+                    <input type="text" id="fname" name="fname">
+                </form>
+          </div>
+          <div class="col">
+            Placeholder column
+          </div>
+        </div>
+      </div>
 
 </body>
 
