@@ -28,6 +28,9 @@ def result():
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
         return render_template('index.html', name = f.filename, fileList = os.listdir('uploads'))
 
+@app.route("/settings_calories", methods=['GET'])
+def settings_calories():
+    return "200"
+
 if __name__ == '__main__':
     app.run()
-    
