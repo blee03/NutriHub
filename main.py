@@ -11,6 +11,14 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 def main():
     return render_template('index.html', fileList = os.listdir('uploads'))
 
+@app.route("/settings")
+def settings():
+    return render_template('settings.html')
+
+@app.route("/upload")
+def upload():
+    return render_template('upload.html')
+
 @app.route("/result", methods = ['POST'])
 def result():
     if request.method == 'POST':
