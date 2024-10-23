@@ -17,7 +17,7 @@ def settings():
 
 @app.route("/upload")
 def upload():
-    return render_template('upload.html')
+    return render_template('upload.html', fileList = os.listdir('uploads'))
 
 @app.route("/result", methods = ['POST'])
 def result():
@@ -26,7 +26,7 @@ def result():
         filename = request.form.get('fname')
         extension = os.path.splitext(f.filename)[1]
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        return render_template('index.html', name = f.filename, fileList = os.listdir('uploads'))
+        return render_template('upload.html', name = f.filename, fileList = os.listdir('uploads'))
 
 @app.route("/settings_calories", methods=['GET'])
 def settings_calories():
