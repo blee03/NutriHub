@@ -17,7 +17,7 @@ def settings():
 
 @app.route("/upload")
 def upload():
-    return render_template('upload.html')
+    return render_template('upload.html', fileList = os.listdir('uploads'))
 
 @app.route("/result", methods = ['POST'])
 def result():
