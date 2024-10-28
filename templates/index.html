@@ -10,6 +10,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+  </script>
 </head>
 
 <body>
@@ -41,8 +43,8 @@
   <div class="container-fluid">
     <div class="row align-items-start">
       <!-- Meal Selection -->
-      <div class="col">
-        <div class="container bg-primary rounded">
+      <div class="col-3">
+        <div class="container-fluid border rounded">
           <!--SELECT A MEAL-->
           <b>Select a meal:</b>
           <select class="form-select" aria-label="Default select example">
@@ -57,10 +59,9 @@
             <input type="text" id="fname" name="fname">
           </form>
         </div>
-        <
-        <div class="container bg-primary rounded">
+        <div class="container-fluid border rounded">
           <h3>Label Preview</h3>
-          <table class="" table">
+          <table class="table">
             <thead>
               <tr>
                 <th scope="col">Macro</th>
@@ -96,60 +97,120 @@
           </table>
         </div>
       </div>
-      <div>
+      <!-- Label preview -->
+      <div class="col-3 rounded border">
+        <h3>Preview -> put the label here</h3>
+      </div>
+      <!-- analytics -->
+      <div class="col-6">
+        <div class="container-fluid border rounded">
+          <h3 class="text-center">Today's Report</h3>
+          <div class="row align-items-start">
+            <div class="col">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Macro</th>
+                    <th scope="col">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Calories</th>
+                    <th>430</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Fat (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Cholesterol (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Sodium (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Carbohydrates (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Protein (g)</th>
+                    <th>8</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Macro</th>
+                    <th scope="col">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Calories</th>
+                    <th>430</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Fat (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Cholesterol (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Sodium (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Carbohydrates (g)</th>
+                    <th>8</th>
+                  </tr>
+                  <tr>
+                    <th scope="row">Protein (g)</th>
+                    <th>8</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
+        </div>
+        <div class="container-fluid rounded border">
+          <h3 class="text-primary">Weekly Trend</h3>
+          <canvas id="myChart" style="width:100%"></canvas>
+          <script>
+            const xValues = [50,60,70,80,90,100,110,120,130,140,150];
+            const yValues = [7,8,8,9,9,9,10,11,14,14,15];
+            
+            new Chart("myChart", {
+              type: "line",
+              data: {
+                labels: xValues,
+                datasets: [{
+                  fill: false,
+                  lineTension: 0,
+                  backgroundColor: "rgba(0,0,255,1.0)",
+                  borderColor: "rgba(0,0,255,0.1)",
+                  data: yValues
+                }]
+              },
+              options: {
+                legend: {display: false},
+                scales: {
+                  yAxes: [{ticks: {min: 6, max:16}}],
+                }
+              }
+            });
+            </script>
+        </div>
       </div>
     </div>
-    <div class="col rounded bg-primary">
-      <h3>Preview -> put the label here</h3>
-    </div>
-
-  </div>
-
-  </div>
-  <div class="col">
-    <div class="container bg-primary rounded">
-      <h3>Current Totals -> current macro count</h3>
-      <table class="" table">
-        <thead>
-          <tr>
-            <th scope="col">Macro</th>
-            <th scope="col">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Calories</th>
-            <th>430</th>
-          </tr>
-          <tr>
-            <th scope="row">Fat (g)</th>
-            <th>8</th>
-          </tr>
-          <tr>
-            <th scope="row">Cholesterol (g)</th>
-            <th>8</th>
-          </tr>
-          <tr>
-            <th scope="row">Sodium (g)</th>
-            <th>8</th>
-          </tr>
-          <tr>
-            <th scope="row">Carbohydrates (g)</th>
-            <th>8</th>
-          </tr>
-          <tr>
-            <th scope="row">Protein (g)</th>
-            <th>8</th>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="container bg-dark rounded">
-      <h3 class="text-primary">Trend -> daily trends</h3>
-    </div>
-  </div>
-  </div>
   </div>
 
 </body>
