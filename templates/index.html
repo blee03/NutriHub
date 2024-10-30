@@ -45,14 +45,18 @@
       <!-- Meal Selection -->
       <div class="col-3">
         <div class="container-fluid border rounded">
-          <!--SELECT A MEAL-->
+          <!--SELECT A MEAL/USER INPUTS-->
           <b>Select a meal:</b>
-          <select class="form-select" aria-label="Default select example">
-            <option selected>Open this select menu</option>
-            {% for file in fileList %}
-            <option value="1">{{file}}</option>
-            {% endfor %}
-          </select>
+          <form>
+            <select class="form-select" aria-label="Default select example" id="fname" name="fname">
+              <option selected>Open this select menu</option>
+              {% for file in fileList %}
+              <option value={{file}}>{{file}}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" name="btn" value="Submit">
+            <input type="submit" name="btn" value="Delete">
+          </form>
           <!--ENTER SERVINGS-->
           <form action="/result" method="post" enctype="multipart/form-data">
             <label for="fname">Servings:</label>

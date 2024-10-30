@@ -8,7 +8,16 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 @app.route("/")
-def main():
+def contact():
+    button = request.args.get('btn')
+    filename = request.args.get('fname')
+    if button == "Delete":
+        if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            print("could not find file")
+    elif button == "Submit":
+        print("submit")
     return render_template('index.html', fileList = os.listdir('uploads'))
 
 @app.route("/settings")
