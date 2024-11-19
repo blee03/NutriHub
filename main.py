@@ -9,7 +9,9 @@ import re
 
 app = Flask(__name__) 
 
-app.config['UPLOAD_FOLDER'] = 'uploads'
+UPLOAD_PATH = 'static/uploads'
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
 
 def extract_nutritional_facts(image_path):
     image = Image.open(image_path)
@@ -52,8 +54,10 @@ def contact():
         else:
             print("could not find file")
     elif button == "Submit":
-        print("submit")
-    return render_template('index.html', fileList = os.listdir('uploads'))
+        filename = UPLOAD_PATH + '/' + filename
+        print(filename)
+        return render_template('index.html', fileList = os.listdir(UPLOAD_PATH), filePreview = filename)
+    return render_template('index.html', fileList = os.listdir(UPLOAD_PATH))
 
 @app.route("/settings")
 def settings():
@@ -61,18 +65,20 @@ def settings():
 
 @app.route("/upload")
 def upload():
-    return render_template('upload.html', fileList = os.listdir('uploads'))
+    return render_template('upload.html', fileList = os.listdir(UPLOAD_PATH))
 
 @app.route("/result", methods = ['POST'])
 def result():
     if request.method == 'POST':
         f = request.files['file']
         filename = request.form.get('fname')
+        filename = filename.replace(" ", "_")
         extension = os.path.splitext(f.filename)[1]
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
         nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
-        return render_template('upload.html', name = f.filename, fileList = os.listdir('uploads'))
+        return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
+        main
 
 @app.route("/settings_calories", methods=['GET'])
 def settings_calories():
