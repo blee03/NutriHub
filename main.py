@@ -3,9 +3,44 @@ from flask import *
 from werkzeug.utils import secure_filename
 import os
 
+import pytesseract
+from PIL import Image
+import re
+
 app = Flask(__name__) 
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
+
+def extract_nutritional_facts(image_path):
+    image = Image.open(image_path)
+    text = pytesseract.image_to_string(image)
+    print("Raw OCR Output:\n", text)
+
+    patterns = {
+        'Calories': r'Calories\s+(\d+)',
+        'Total Fat': r'Total Fat\s+(\d+g)',
+        'Sodium': r'Sodium\s+(\d+mg)',
+        'Total Carbohydrate': r'Total Carbohydrate\s+(\d+g)',
+        'Protein': r'Protein\s+(\d+g)'
+    }
+    
+    nutrition_facts = {}
+
+    for nutrient, pattern in patterns.items():
+        match = re.search(pattern, text)
+        if match:
+            nutrition_facts[nutrient] = match.group(1)
+
+    for key, value in nutrition_facts.items():
+        try:
+            if 'g' in value:
+                nutrition_facts[key] = float(value.replace('g', ''))
+            elif 'mg' in value:
+                nutrition_facts[key] = float(value.replace('mg', '')) / 1000
+        except ValueError:
+            print(f"Could not convert value for {key}: '{value}'")
+
+    return nutrition_facts
 
 @app.route("/")
 def contact():
@@ -35,6 +70,8 @@ def result():
         filename = request.form.get('fname')
         extension = os.path.splitext(f.filename)[1]
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        print("\nExtracted Nutritional Facts:\n", nutrition_facts)
         return render_template('upload.html', name = f.filename, fileList = os.listdir('uploads'))
 
 @app.route("/settings_calories", methods=['GET'])
