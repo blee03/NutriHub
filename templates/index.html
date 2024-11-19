@@ -14,6 +14,17 @@
   </script>
 </head>
 
+<script>
+  window.onload = fillGoal;
+  function fillGoal() {
+    document.getElementById("caloriesGoal").innerText = parseInt(localStorage.getItem("calories")) + " kcal";
+    document.getElementById("fatGoal").innerText = parseInt(localStorage.getItem("fat")) + " g";
+    document.getElementById("sodiumGoal").innerText = parseInt(localStorage.getItem("sodium")) + " mg";
+    document.getElementById("carbohydratesGoal").innerText = parseInt(localStorage.getItem("carbohydrates")) + " g";
+    document.getElementById("proteinGoal").innerText = parseInt(localStorage.getItem("protein")) + " g";
+  }
+</script>
+
 <body>
   <!-- NAVBAR -->
   <nav class="navbar sticky-top navbar-expand-lg bg-body-tertiary">
@@ -82,10 +93,6 @@
                 <th>8</th>
               </tr>
               <tr>
-                <th scope="row">Cholesterol (g)</th>
-                <th>8</th>
-              </tr>
-              <tr>
                 <th scope="row">Sodium (g)</th>
                 <th>8</th>
               </tr>
@@ -120,33 +127,30 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">Calories</th>
-                    <th>430</th>
+                    <th scope="row">Calories (kcal)</th>
+                    <th><span id="caloriesGoal"></span></th>
                   </tr>
                   <tr>
                     <th scope="row">Fat (g)</th>
-                    <th>8</th>
+                    <th><span id="fatGoal"></span></th>
                   </tr>
                   <tr>
-                    <th scope="row">Cholesterol (g)</th>
-                    <th>8</th>
-                  </tr>
-                  <tr>
-                    <th scope="row">Sodium (g)</th>
-                    <th>8</th>
+                    <th scope="row">Sodium (mg)</th>
+                    <th><span id="sodiumGoal"></span></th>
                   </tr>
                   <tr>
                     <th scope="row">Carbohydrates (g)</th>
-                    <th>8</th>
+                    <th><span id="carbohydratesGoal"></span></th>
                   </tr>
                   <tr>
                     <th scope="row">Protein (g)</th>
-                    <th>8</th>
+                    <th><span id="proteinGoal"></span></th>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="col">
+              <h4 class="text-center">Daily Values</h4>
               <table class="table">
                 <thead>
                   <tr>
@@ -161,10 +165,6 @@
                   </tr>
                   <tr>
                     <th scope="row">Fat (g)</th>
-                    <th>8</th>
-                  </tr>
-                  <tr>
-                    <th scope="row">Cholesterol (g)</th>
                     <th>8</th>
                   </tr>
                   <tr>
@@ -183,40 +183,9 @@
               </table>
             </div>
           </div>
-
-        </div>
-        <div class="container-fluid rounded border">
-          <h3 class="text-primary">Weekly Trend</h3>
-          <canvas id="myChart" style="width:100%"></canvas>
-          <script>
-            const xValues = [50,60,70,80,90,100,110,120,130,140,150];
-            const yValues = [7,8,8,9,9,9,10,11,14,14,15];
-            
-            new Chart("myChart", {
-              type: "line",
-              data: {
-                labels: xValues,
-                datasets: [{
-                  fill: false,
-                  lineTension: 0,
-                  backgroundColor: "rgba(0,0,255,1.0)",
-                  borderColor: "rgba(0,0,255,0.1)",
-                  data: yValues
-                }]
-              },
-              options: {
-                legend: {display: false},
-                scales: {
-                  yAxes: [{ticks: {min: 6, max:16}}],
-                }
-              }
-            });
-            </script>
         </div>
       </div>
     </div>
   </div>
-
 </body>
-
 </html>
