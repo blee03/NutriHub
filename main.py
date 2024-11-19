@@ -78,7 +78,6 @@ def result():
         nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
         return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
-        main
 
 @app.route("/settings_calories", methods=['GET'])
 def settings_calories():
