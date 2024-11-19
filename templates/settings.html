@@ -7,6 +7,36 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
+<script>
+    window.onload = fillForm;
+    function updateInfo() {
+        document.getElementById("caloriesInfo").innerText = " (" + document.getElementById("calories").value + " kcal)";
+        document.getElementById("fatInfo").innerText = " (" + document.getElementById("fat").value + " g)";
+        document.getElementById("sodiumInfo").innerText = " (" + document.getElementById("sodium").value + " mg)";
+        document.getElementById("carbohydratesInfo").innerText = " (" + document.getElementById("carbohydrates").value + " g)";
+        document.getElementById("proteinInfo").innerText = " (" + document.getElementById("protein").value + " g)";
+    }
+    function fillForm() {
+        document.getElementById("calories").value = parseInt(localStorage.getItem("calories"));
+        document.getElementById("fat").value = parseInt(localStorage.getItem("fat"));
+        document.getElementById("sodium").value = parseInt(localStorage.getItem("sodium"));
+        document.getElementById("carbohydrates").value = parseInt(localStorage.getItem("carbohydrates"));
+        document.getElementById("protein").value = parseInt(localStorage.getItem("protein"));
+
+        updateInfo();
+    }
+    function updateGoals() {
+        localStorage.clear();
+        localStorage.setItem("calories", document.getElementById("calories").value);
+        localStorage.setItem("fat", document.getElementById("fat").value);
+        localStorage.setItem("sodium", document.getElementById("sodium").value);
+        localStorage.setItem("carbohydrates", document.getElementById("carbohydrates").value);
+        localStorage.setItem("protein", document.getElementById("protein").value);
+
+        return alert("Goals Updated!");
+    }
+</script>
+
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -38,82 +68,42 @@
     <!-- Current Goals -->
     <div class="container-xl">
         <h2>Current Goal Macro Goals</h2>
-        <label for="calories" class="form-label">Calories</label>
-        <input type="range" class="form-range" min="0" max="2200" id="calories" aria-describedby="caloriesHelpBlock">
+        <label for="calories" class="form-label">Calories<span id="caloriesInfo"></span></label>
+        <input type="range" class="form-range" min="0" max="5000" id="calories" aria-describedby="caloriesHelpBlock" oninput="updateInfo()">
         <div id="caloriesHelpBlock" class="form-text">
             A measure of energy provided by food and beverages. Essential for bodily functions, excess calories can lead
             to weight gain, while too few can cause malnutrition.
         </div>
-        <label for="fat" class="form-label">Fat</label>
-        <input type="range" class="form-range" min="0" max="5" id="fat" aria-describedby="fatHelpBlock">
+        <label for="fat" class="form-label">Fat<span id="fatInfo"></span></label>
+        <input type="range" class="form-range" min="0" max="156" id="fat" aria-describedby="fatHelpBlock" oninput="updateInfo()">
         <div id="fatHelpBlock" class="form-text">
             A nutrient that provides energy and supports cell growth. It aids in nutrient absorption and hormone
             production, with various types: saturated, unsaturated, and trans fats.
         </div>
-        <label for="cholesterol" class="form-label">Cholesterol</label>
-        <input type="range" class="form-range" min="0" max="5" id="cholesterol" aria-describedby="cholesterolHelpBlock">
-        <div id="cholesterolHelpBlock" class="form-text">
-            A waxy substance found in blood and cells, crucial for producing hormones and vitamin D. High levels can
-            increase heart disease risk; it's found in animal products.
-        </div>
-        <label for="sodium" class="form-label">Sodium</label>
-        <input type="range" class="form-range" min="0" max="5" id="sodium" aria-describedby="sodiumHelpBlock">
+        <label for="sodium" class="form-label">Sodium<span id="sodiumInfo"></span></label>
+        <input type="range" class="form-range" min="0" max="4600" id="sodium" aria-describedby="sodiumHelpBlock" oninput="updateInfo()">
         <div id="sodiumHelpBlock" class="form-text">
             An essential mineral that helps maintain fluid balance and supports nerve and muscle function. Excessive
             intake can lead to hypertension and other health issues.
         </div>
-        <label for="carbohydrates" class="form-label">Carbohydrates</label>
-        <input type="range" class="form-range" min="0" max="5" id="carbohydrates"
-            aria-describedby="carbohydratesHelpBlock">
+        <label for="carbohydrates" class="form-label">Carbohydrates<span id="carbohydratesInfo"></span></label>
+        <input type="range" class="form-range" min="0" max="550" id="carbohydrates"
+            aria-describedby="carbohydratesHelpBlock" oninput="updateInfo()">
         <div id="carbohydratesHelpBlock" class="form-text">
             The body's primary energy source, found in foods like grains, fruits, and vegetables. They are categorized
             into simple sugars and complex carbs, influencing blood sugar levels.
         </div>
-        <label for="protein" class="form-label">Protein</label>
-        <input type="range" class="form-range" min="0" max="5" id="protein" aria-describedby="proteinHelpBlock">
+        <label for="protein" class="form-label">Protein<span id="proteinInfo"></span></label>
+        <input type="range" class="form-range" min="0" max="100" id="protein" aria-describedby="proteinHelpBlock" oninput="updateInfo()">
         <div id="proteinHelpBlock" class="form-text">
             Vital for building and repairing tissues, proteins are made of amino acids. They support immune function and
             hormone production, found in both animal and plant-based foods.
         </div>
         <br>
         <div>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#goalUpdated" type="submit" onclick="updateGoals()">Update Goals</button>
+            <button class="btn btn-primary" type="submit" onclick="updateGoals()">Update Goals</button>
         </div>
     </div>
-
-    <div class="modal fade" id="goalUpdated" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Goal Updated
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        window.onload = fillForm;
-        function fillForm() {
-            document.getElementById("calories").value = 20;
-            document.getElementById("fat").value = 20;
-            document.getElementById("cholesterol").value = 20;
-            document.getElementById("sodium").value = 20;
-            document.getElementById("carbohydrates").value = 20;
-            document.getElementById("protein").value = 20;
-        }
-        function updateGoals() {
-            console.log("updated!")
-        }
-    </script>
-
-
 </body>
 
 </html>
