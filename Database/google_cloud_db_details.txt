@@ -1,0 +1,6 @@
+db_config = {
+    'user': 'root1',
+    'password': 'test',
+    'host': '35.237.230.58',  
+    'database': 'my-sql-database'
+}
