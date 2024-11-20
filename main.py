@@ -55,7 +55,6 @@ def contact():
             print("could not find file")
     elif button == "Submit":
         filename = UPLOAD_PATH + '/' + filename
-        print(filename)
         return render_template('index.html', fileList = os.listdir(UPLOAD_PATH), filePreview = filename)
     return render_template('index.html', fileList = os.listdir(UPLOAD_PATH))
 
@@ -81,7 +80,7 @@ def result():
 
 @app.route("/settings_calories", methods=['GET'])
 def settings_calories():
-    return "200"
+    return "200"    
 
 if __name__ == '__main__':
     app.run()

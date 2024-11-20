@@ -59,13 +59,13 @@
           <!--SELECT A MEAL/USER INPUTS-->
           <b>Select a meal:</b>
           <form>
-            <select class="form-select" aria-label="Default select example" id="fname" name="fname">
+            <select class="form-select" aria-label="Default select example" id="fname" name="fname" onchange="preview()">
               <option selected>Open this select menu</option>
               {% for file in fileList %}
               <option value={{file}}>{{file}}</option>
               {% endfor %}
             </select>
-            <input type="submit" name="btn" value="Submit">
+            <input type="submit" name="btn" value="Submit" onclick="preview()">
             <input type="submit" name="btn" value="Delete">
           </form>
           <!--ENTER SERVINGS-->
@@ -110,8 +110,8 @@
       </div>
       <!-- Label preview -->
       <div class="col-3 rounded border">
-        <b>{{ filePreview }}: </b>
-        <img src={{ filePreview }} class="image" width="400" />
+        <p id="demo"></p>
+        <img id="preview" class="image" width="400" />
       </div>
       <!-- analytics -->
       <div class="col-6">
@@ -188,5 +188,16 @@
       </div>
     </div>
   </div>
+
+  <script>
+    function preview() {
+      var x = document.getElementById("fname").value;
+      document.getElementById("demo").innerHTML = "You selected: " + x;
+      const image = document.getElementById('preview');
+      image.src = 'static/uploads/' + x;
+    }
+  </script>
+
+
 </body>
 </html>
