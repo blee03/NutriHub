@@ -2,6 +2,8 @@ from fileinput import filename
 from flask import *  
 from werkzeug.utils import secure_filename
 import os
+import base64
+import requests
 
 import pytesseract
 from PIL import Image
@@ -14,9 +16,34 @@ UPLOAD_PATH = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
 
 def extract_nutritional_facts(image_path):
-    image = Image.open(image_path)
-    text = pytesseract.image_to_string(image)
-    print("Raw OCR Output:\n", text)
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+
+    API_URL = "https://vision.googleapis.com/v1/images:annotate"
+    API_KEY = ""  # Replace with your API key
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "requests": [
+            {
+                "image": {
+                    "content": encoded_string  # Replace this with your base64 encoded image
+                },
+                "features": [
+                    {
+                        "type": "TEXT_DETECTION"
+                    }
+                ]
+            }
+        ]
+    }
+
+    response = requests.post(API_URL, headers=headers, params={"key": API_KEY}, json=data)
+
+    text = response.json()['responses'][0]['textAnnotations'][0]['description']
 
     patterns = {
         'Calories': r'Calories\s+(\d+)',
