@@ -43,47 +43,52 @@
 <body>
     <nav>
         <div class="nav-wrapper" style="background-color: #171a21;">
-            <a href="#" class="brand-logo center">NutriHub</a>
+            <a href="/home" class="brand-logo center">NutriHub</a>
             <ul id="nav-mobile" class="left hide-on-med-and-down">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/set-goal">Set Goal</a></li>
-                <li><a href="/analytics">Analytics</a></li>
+                <li><a href="/">Add a Meal</a></li>
+                <li><a href="/uploadv2">Upload Label</a></li>
+                <li><a href="/settings">Set Goal</a></li>
             </ul>
         </div>
     </nav>
     <main>
         <div class="container">
-            <h4>Upload Label</h4>
-            <div class="row">
-                <form class="col s12" id="uploadForm">
-                    <div class="file-field input-field">
-                        <div class="btn">
-                            <span>File</span>
-                            <input type="file" id="fileInput" accept="image/*">
-                        </div>
-                        <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text" placeholder="Upload an image">
-                        </div>
+            <h4>Upload Label</h4><br>
+            <form action="/resultv2" method="post" enctype="multipart/form-data">
+                
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>File</span>
+                        <input type="file" id="fileInput" name="file" accept="image/*">
                     </div>
-                    <div class="input-field">
-                        <input id="fileName" type="text" class="validate">
-                        <label for="fileName">Rename File</label>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Upload an image">
                     </div>
-                    <button class="btn waves-effect waves-light" type="submit" name="action">Upload
-                        <i class="material-icons right">cloud_upload</i>
-                    </button>
-                </form>
-            </div>
+                </div>
+
+                <label for="fname">File name:</label>
+                <input type="text" id="fname" name="fname"><br><br>
+
+                <button class="btn waves-effect waves-light" type="submit" value="Upload">Upload
+                    <i class="material-icons right">cloud_upload</i>
+                </button>
+
+            </form>
+            
+            <br>
+
             <div class="uploaded-files">
                 <h5>Uploaded Files</h5>
                 <ul id="fileList" class="collection">
-                    <!-- Uploaded files will be listed here -->
                 </ul>
+                    {% for file in fileList %}
+                    <p>{{ file }} </p>
+                    {% endfor %}
             </div>
         </div>
     </main>
 
+    <!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
@@ -111,5 +116,6 @@
             M.toast({html: 'File uploaded successfully', classes: 'green'});
         });
     </script>
+    -->
 </body>
 </html>

@@ -55,7 +55,19 @@ def about():
 
 @app.route("/uploadv2")
 def uploadv2():
-    return render_template('uploadV2.html')
+    return render_template('uploadV2.html', fileList = os.listdir(UPLOAD_PATH))
+
+@app.route("/resultv2", methods = ['POST'])
+def resultv2():
+    if request.method == 'POST':
+        f = request.files['file']
+        filename = request.form.get('fname')
+        filename = filename.replace(" ", "_")
+        extension = os.path.splitext(f.filename)[1]
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        print("\nExtracted Nutritional Facts:\n", nutrition_facts)
+        return render_template('uploadV2.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
 
 @app.route("/")
 def contact():
