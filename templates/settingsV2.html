@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #007aff;
+        }
+
+        .slider-container,
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        input[type="number"],
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007aff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+
+<body>
+    <nav style="background-color: #007aff; padding: 10px;"></nav>
+    <ul style="list-style: none; display: flex; justify-content: center; margin: 0; padding: 0;">
+        <li style="margin: 0 15px;">
+            <a href="/home" style="color: white; text-decoration: none; font-size: 18px;">Home</a>
+        </li>
+        <li style="margin: 0 15px;">
+            <a href="/upload" style="color: white; text-decoration: none; font-size: 18px;">Upload</a>
+        </li>
+        <li style="margin: 0 15px;">
+            <a href="/settings" style="color: white; text-decoration: none; font-size: 18px;">Settings</a>
+        </li>
+    </ul>
+    </nav>
+    <h1>Set Your Daily Goals</h1>
+    <div class="slider-container">
+        <label for="calories">Calories: <span id="caloriesValue">2000</span></label>
+        <input type="range" id="calories" name="calories" min="1000" max="4000" value="2000"
+            oninput="document.getElementById('caloriesValue').innerText = this.value">
+    </div>
+    <div class="slider-container">
+        <label for="protein">Protein (g): <span id="proteinValue">50</span></label>
+        <input type="range" id="protein" name="protein" min="10" max="200" value="50"
+            oninput="document.getElementById('proteinValue').innerText = this.value">
+    </div>
+    <div class="slider-container">
+        <label for="cholesterol">Cholesterol (mg): <span id="cholesterolValue">300</span></label>
+        <input type="range" id="cholesterol" name="cholesterol" min="0" max="500" value="300"
+            oninput="document.getElementById('cholesterolValue').innerText = this.value">
+    </div>
+    <div class="slider-container">
+        <label for="fat">Fat (g): <span id="fatValue">70</span></label>
+        <input type="range" id="fat" name="fat" min="20" max="150" value="70"
+            oninput="document.getElementById('fatValue').innerText = this.value">
+    </div>
+    <div class="slider-container">
+        <label for="carbs">Carbs (g): <span id="carbsValue">300</span></label>
+        <input type="range" id="carbs" name="carbs" min="100" max="500" value="300"
+            oninput="document.getElementById('carbsValue').innerText = this.value">
+    </div>
+    <div class="slider-container">
+        <label for="sodium">Sodium (mg): <span id="sodiumValue">2300</span></label>
+        <input type="range" id="sodium" name="sodium" min="500" max="5000" value="2300"
+            oninput="document.getElementById('sodiumValue').innerText = this.value">
+    </div>
+    <div class="slider-container">
+        <label for="fiber">Fiber (g): <span id="fiberValue">25</span></label>
+        <input type="range" id="fiber" name="fiber" min="5" max="50" value="25"
+            oninput="document.getElementById('fiberValue').innerText = this.value">
+    </div>
+
+    <h2>Get Suggested Daily Goals</h2>
+    <div class="form-container">
+        <form id="suggestionForm">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required><br>
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select><br>
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" name="weight" required><br>
+            <label for="height">Height (cm):</label>
+            <input type="number" id="height" name="height" required><br>
+            <label for="activity">Activity Level:</label>
+            <select id="activity" name="activity" required>
+                <option value="sedentary">Sedentary</option>
+                <option value="light">Lightly active</option>
+                <option value="moderate">Moderately active</option>
+                <option value="active">Active</option>
+                <option value="very_active">Very active</option>
+            </select><br>
+            <button type="button" onclick="suggestGoals()">Get Suggestions</button>
+        </form>
+    </div>
+
+    <script>
+        function suggestGoals() {
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const weight = document.getElementById('weight').value;
+            const height = document.getElementById('height').value;
+            const activity = document.getElementById('activity').value;
+
+            let suggestedCalories;
+            if (gender === 'male') {
+                suggestedCalories = 10 * weight + 6.25 * height - 5 * age + 5;
+            } else {
+                suggestedCalories = 10 * weight + 6.25 * height - 5 * age - 161;
+            }
+
+            switch (activity) {
+                case 'sedentary':
+                    suggestedCalories *= 1.2;
+                    break;
+                case 'light':
+                    suggestedCalories *= 1.375;
+                    break;
+                case 'moderate':
+                    suggestedCalories *= 1.55;
+                    break;
+                case 'active':
+                    suggestedCalories *= 1.725;
+                    break;
+                case 'very_active':
+                    suggestedCalories *= 1.9;
+                    break;
+            }
+
+            const suggestedProtein = weight * 0.8;
+            const suggestedCholesterol = 300;
+            const suggestedFat = (suggestedCalories * 0.3) / 9;
+            const suggestedCarbs = (suggestedCalories * 0.5) / 4;
+            const suggestedSodium = 2300;
+            const suggestedFiber = 25;
+
+            document.getElementById('calories').value = suggestedCalories.toFixed(0);
+            document.getElementById('caloriesValue').innerText = suggestedCalories.toFixed(0);
+            document.getElementById('protein').value = suggestedProtein.toFixed(0);
+            document.getElementById('proteinValue').innerText = suggestedProtein.toFixed(0);
+            document.getElementById('cholesterol').value = suggestedCholesterol;
+            document.getElementById('cholesterolValue').innerText = suggestedCholesterol;
+            document.getElementById('fat').value = suggestedFat.toFixed(0);
+            document.getElementById('fatValue').innerText = suggestedFat.toFixed(0);
+            document.getElementById('carbs').value = suggestedCarbs.toFixed(0);
+            document.getElementById('carbsValue').innerText = suggestedCarbs.toFixed(0);
+            document.getElementById('sodium').value = suggestedSodium;
+            document.getElementById('sodiumValue').innerText = suggestedSodium;
+            document.getElementById('fiber').value = suggestedFiber;
+            document.getElementById('fiberValue').innerText = suggestedFiber;
+
+            // make the popup look similar to a successful upload in uploadv2.html
+
+        }
+    </script>
+</body>
+
+</html>
