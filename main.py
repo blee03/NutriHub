@@ -45,7 +45,7 @@ def extract_nutritional_facts(image_path):
     return nutrition_facts
 
 # add a route for the landing page that u just created
-@app.route("/home")
+@app.route("/")
 def home():
     return render_template('home.html')
 
@@ -73,7 +73,7 @@ def resultv2():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route("/")
+@app.route("/home")
 def contact():
     button = request.args.get('btn')
     filename = request.args.get('fname')
