@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriHub - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1b2838;
+            color: #c7d5e0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .navbar {
+            background-color: #171a21;
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            color: #c7d5e0;
+        }
+
+        .navbar-brand:hover {
+            color: #ffffff;
+        }
+
+        .nav-link {
+            color: #c7d5e0;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: #2a475e;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #1b2838;
+            color: #c7d5e0;
+        }
+
+        .btn-custom {
+            background-color: #66c0f4;
+            color: #ffffff;
+        }
+
+        .btn-custom:hover {
+            background-color: #417a9b;
+        }
+
+        .card-title {
+            color: #c7d5e0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">NutriHub</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/set-goal">Set Goal</a></li>
+                <li class="nav-item"><a class="nav-link" href="/analytics">Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 class="text-center">Nutritional Dashboard</h3>
+        <!-- Select Nutritional Label and Add Servings -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Select Nutritional Label</div>
+                    <div class="card-body">
+                        <form>
+                            <select class="form-select" aria-label="Default select example" id="fname" name="fname"
+                                onchange="preview()">
+                                <option selected>Open this select menu</option>
+                                {% for file in fileList %}
+                                <option value={{file}}>{{file}}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="servings">Servings</label>
+                            <input type="number" class="form-control" id="servings" name="servings" min="1" required>
+                        </form>
+                    </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Uploaded Image Preview</div>
+                    <div class="card-body text-center">
+                        <img id="uploadedImage" src="" alt="No image selected" class="img-fluid"
+                            style="max-height: 400px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals and Current Total of Nutrients Consumed -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Total Nutriants Consumed</div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>Calories:</td>
+                                    <td><span id="caloriesConsumed"></span> kcal</td>
+                                </tr>
+                                <tr>
+                                    <td>Fat:</td>
+                                    <td><span id="fatConsumed"></span> g</td>
+                                </tr>
+                                <tr>
+                                    <td>Sodium:</td>
+                                    <td><span id="sodiumConsumed"></span> mg</td>
+                                </tr>
+                                <tr>
+                                    <td>Carbohydrates:</td>
+                                    <td><span id="carbohydratesConsumed"></span> g</td>
+                                </tr>
+                                <tr>
+                                    <td>Protein:</td>
+                                    <td><span id="proteinConsumed"></span> g</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Goals</div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>Calories Goal:</td>
+                                    <td><span id="caloriesGoal"></span> kcal</td>
+                                </tr>
+                                <tr>
+                                    <td>Fat Goal:</td>
+                                    <td><span id="fatGoal"></span> g</td>
+                                </tr>
+                                <tr>
+                                    <td>Sodium Goal:</td>
+                                    <td><span id="sodiumGoal"></span> mg</td>
+                                </tr>
+                                <tr>
+                                    <td>Carbohydrates Goal:</td>
+                                    <td><span id="carbohydratesGoal"></span> g</td>
+                                </tr>
+                                <tr>
+                                    <td>Protein Goal:</td>
+                                    <td><span id="proteinGoal"></span> g</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+
+        // Placeholder data for goals and consumed nutrients
+        document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
+        document.getElementById('fatGoal').innerText = localStorage.getItem('fat') || '70';
+        document.getElementById('sodiumGoal').innerText = localStorage.getItem('sodium') || '2300';
+        document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
+        document.getElementById('proteinGoal').innerText = localStorage.getItem('protein') || '50';
+
+        document.getElementById('caloriesConsumed').innerText = '1500';
+        document.getElementById('fatConsumed').innerText = '50';
+        document.getElementById('sodiumConsumed').innerText = '1800';
+        document.getElementById('carbohydratesConsumed').innerText = '200';
+        document.getElementById('proteinConsumed').innerText = '40';
+
+        document.getElementById('nutritionalLabel').addEventListener('change', function () {
+            const selectedFile = this.value;
+            document.getElementById('uploadedImage').src = 'static/uploads/' + selectedFile;
+        });
+    </script>
+</body>
+
+</html>

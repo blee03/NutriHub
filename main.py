@@ -49,13 +49,17 @@ def extract_nutritional_facts(image_path):
 def home():
     return render_template('home.html')
 
-@app.route("/settingsv3")
+@app.route("/goal")
 def about():
     return render_template('settingsv3.html')
 
 @app.route("/uploadv2")
 def uploadv2():
     return render_template('uploadV2.html')
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route("/")
 def contact():
@@ -89,11 +93,7 @@ def result():
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
         nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
-        return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
-
-@app.route("/settings_calories", methods=['GET'])
-def settings_calories():
-    return "200"    
+        return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH)) 
 
 if __name__ == '__main__':
     app.run()
