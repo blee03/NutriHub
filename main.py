@@ -121,57 +121,18 @@ def extract_nutritional_facts(image_path):
 
     return nutrition_facts
 
-# @app.route("/")
-# def contact():
-#     button = request.args.get('btn')
-#     filename = request.args.get('fname')
-#     if button == "Delete":
-#         if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
-#             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#         else:
-#             print("could not find file")
-#     elif button == "Submit":
-#         filename = UPLOAD_PATH + '/' + filename
-#         return render_template('index.html', fileList = os.listdir(UPLOAD_PATH), filePreview = filename)
-#     return render_template('index.html', fileList = os.listdir(UPLOAD_PATH))
+# add a route for the landing page that u just created
+@app.route("/")
+def home():
+    return render_template('home.html')
 
-# @app.route("/settings")
-# def settings():
-#     return render_template('settings.html')
+@app.route("/goal")
+def about():
+    return render_template('settingsv3.html')
 
-# @app.route("/upload", methods=['GET', 'POST'])
-# def upload():
-#     if request.method == 'POST':
-#         db_result = connect_to_database()
-
-#         if 'file' not in request.files:
-#             return render_template('upload.html', error="No file part")
-
-#         file = request.files['file']
-#         if file.filename == '':
-#             return render_template('upload.html', error="No selected file")
-
-#         filename = secure_filename(file.filename)
-#         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#         return render_template('upload.html', message=f'File "{filename}" uploaded successfully! {db_result}')
-
-#     return render_template('upload.html', fileList = os.listdir(UPLOAD_PATH))
-
-# @app.route("/result", methods = ['POST'])
-# def result():
-#     if request.method == 'POST':
-#         f = request.files['file']
-#         filename = request.form.get('fname')
-#         filename = filename.replace(" ", "_")
-#         extension = os.path.splitext(f.filename)[1]
-
-#         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-#         nutrition_facts, nutrition_text = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-#         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
-#         insert_to_label(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension), ''.join(os.path.splitext(f.filename)))
-#         connect_to_database()
-
-#         return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
+@app.route("/uploadv2")
+def uploadv2():
+    return render_template('uploadV2.html', fileList = os.listdir(UPLOAD_PATH))
 
 import sqlite3
 from init_db import reset
@@ -199,32 +160,47 @@ def resultv2():
 
         # save the file to the static/uploads folder
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        print("\nExtracted Nutritional Facts:\n", nutrition_facts)
+        return render_template('uploadV2.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
 
-        # extract nutritional facts from the image
-        nutritional_label = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        print(nutritional_label)
+@app.route("/dashboard")
+def dashboard():
+    return render_template('dashboard.html')
 
-        # check if the nutritional facts are complete
-        if(len(nutritional_label) != 4):
-            # go through and fill in the missing values with 0
-            nutritional_label['Calories'] = nutritional_label.get('Calories', 0)
-            nutritional_label['Total Fat'] = nutritional_label.get('Total Fat', 0)
-            nutritional_label['Total Carbohydrate'] = nutritional_label.get('Total Carbohydrate', 0)
-            nutritional_label['Protein'] = nutritional_label.get('Protein', 0)
+@app.route("/home")
+def contact():
+    button = request.args.get('btn')
+    filename = request.args.get('fname')
+    if button == "Delete":
+        if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            print("could not find file")
+    elif button == "Submit":
+        filename = UPLOAD_PATH + '/' + filename
+        return render_template('index.html', fileList = os.listdir(UPLOAD_PATH), filePreview = filename)
+    return render_template('index.html', fileList = os.listdir(UPLOAD_PATH))
 
-        # connect to the database and insert the nutritional facts
-        conn = get_db_connection()
-        conn.execute("INSERT INTO label (name, calories, fat, carbs, protein) VALUES (?, ?, ?, ?, ?)",
-                    (f.filename, nutritional_label['Calories'], nutritional_label['Total Fat'], nutritional_label['Total Carbohydrate'], nutritional_label['Protein'])
-                    )
-        conn.commit()
-        labels = conn.execute('SELECT * FROM label').fetchall()
-        # print the labels to console as a json format
-        print(labels)
-        conn.close()
+@app.route("/settings")
+def settings():
+    return render_template('settings.html')
 
-        return render_template('main.html',labels=labels)
+@app.route("/upload")
+def upload():
+    return render_template('upload.html', fileList = os.listdir(UPLOAD_PATH))
 
+@app.route("/result", methods = ['POST'])
+def result():
+    if request.method == 'POST':
+        f = request.files['file']
+        filename = request.form.get('fname')
+        filename = filename.replace(" ", "_")
+        extension = os.path.splitext(f.filename)[1]
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        print("\nExtracted Nutritional Facts:\n", nutrition_facts)
+        return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH)) 
 
 if __name__ == '__main__':
     reset()
