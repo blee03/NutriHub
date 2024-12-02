@@ -4,17 +4,20 @@ from werkzeug.utils import secure_filename
 import os
 import base64
 import requests
-import mysql.connector
-
-import pytesseract
-from PIL import Image
+import sqlite3
+from init_db import reset
 import re
+from dotenv import load_dotenv
 
 app = Flask(__name__) 
 
 UPLOAD_PATH = 'static/uploads'
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 # db_config = {
 #     'user': 'new_user',
@@ -71,7 +74,7 @@ def extract_nutritional_facts(image_path):
         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
 
     API_URL = "https://vision.googleapis.com/v1/images:annotate"
-    API_KEY = ""  # Replace with your API key
+    API_KEY = str(os.getenv('API_KEY'))  # Replace with your API key
 
     headers = {
         "Content-Type": "application/json"
@@ -132,23 +135,70 @@ def about():
 
 @app.route("/uploadv2")
 def uploadv2():
-    return render_template('uploadV2.html', fileList = os.listdir(UPLOAD_PATH))
-
-import sqlite3
-from init_db import reset
-
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-@app.route('/main')
-def index():
     conn = get_db_connection()
     labels = conn.execute('SELECT * FROM label').fetchall()
     conn.close()
-    print(labels)
-    return render_template('main.html', labels=labels)
+    return render_template('uploadV2.html', labels = labels)
+
+# @app.route('/main')
+# def index():
+#     conn = get_db_connection()
+#     labels = conn.execute('SELECT * FROM label').fetchall()
+#     conn.close()
+#     print(labels)
+#     return render_template('main.html', labels=labels)
+
+# @app.route('/resultv2', methods = ['POST'])
+# def resultv2():
+#     if request.method == 'POST':
+#         f = request.files['file']
+#         filename = request.form.get('fname')
+#         filename = filename.replace(" ", "_")
+#         extension = os.path.splitext(f.filename)[1]
+
+#         # save the file to the static/uploads folder
+#         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+#         nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+#         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
+#         return render_template('uploadV2.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template('dashboard.html')
+
+# @app.route("/home")
+# def contact():
+#     button = request.args.get('btn')
+#     filename = request.args.get('fname')
+#     if button == "Delete":
+#         if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+#             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#         else:
+#             print("could not find file")
+#     elif button == "Submit":
+#         filename = UPLOAD_PATH + '/' + filename
+#         return render_template('index.html', fileList = os.listdir(UPLOAD_PATH), filePreview = filename)
+#     return render_template('index.html', fileList = os.listdir(UPLOAD_PATH))
+
+# @app.route("/settings")
+# def settings():
+#     return render_template('settings.html')
+
+# @app.route("/upload")
+# def upload():
+#     return render_template('upload.html', fileList = os.listdir(UPLOAD_PATH))
+
+# @app.route("/result", methods = ['POST'])
+# def result():
+#     if request.method == 'POST':
+#         f = request.files['file']
+#         filename = request.form.get('fname')
+#         filename = filename.replace(" ", "_")
+#         extension = os.path.splitext(f.filename)[1]
+#         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+#         nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+#         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
+#         return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH)) 
 
 @app.route('/resultv2', methods = ['POST'])
 def resultv2():
@@ -160,47 +210,31 @@ def resultv2():
 
         # save the file to the static/uploads folder
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        print("\nExtracted Nutritional Facts:\n", nutrition_facts)
-        return render_template('uploadV2.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
 
-@app.route("/dashboard")
-def dashboard():
-    return render_template('dashboard.html')
+        # extract nutritional facts from the image
+        nutritional_label = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        print(nutritional_label)
 
-@app.route("/home")
-def contact():
-    button = request.args.get('btn')
-    filename = request.args.get('fname')
-    if button == "Delete":
-        if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        else:
-            print("could not find file")
-    elif button == "Submit":
-        filename = UPLOAD_PATH + '/' + filename
-        return render_template('index.html', fileList = os.listdir(UPLOAD_PATH), filePreview = filename)
-    return render_template('index.html', fileList = os.listdir(UPLOAD_PATH))
+        # check if the nutritional facts are complete
+        if(len(nutritional_label) != 4):
+            # go through and fill in the missing values with 0
+            nutritional_label['Calories'] = nutritional_label.get('Calories', 0)
+            nutritional_label['Total Fat'] = nutritional_label.get('Total Fat', 0)
+            nutritional_label['Total Carbohydrate'] = nutritional_label.get('Total Carbohydrate', 0)
+            nutritional_label['Protein'] = nutritional_label.get('Protein', 0)
 
-@app.route("/settings")
-def settings():
-    return render_template('settings.html')
+        # connect to the database and insert the nutritional facts
+        conn = get_db_connection()
+        conn.execute("INSERT INTO label (name, calories, fat, carbs, protein) VALUES (?, ?, ?, ?, ?)",
+                    (f.filename, nutritional_label['Calories'], nutritional_label['Total Fat'], nutritional_label['Total Carbohydrate'], nutritional_label['Protein'])
+                    )
+        conn.commit()
+        labels = conn.execute('SELECT * FROM label').fetchall()
+        # print the labels to console as a json format
+        print(labels)
+        conn.close()
 
-@app.route("/upload")
-def upload():
-    return render_template('upload.html', fileList = os.listdir(UPLOAD_PATH))
-
-@app.route("/result", methods = ['POST'])
-def result():
-    if request.method == 'POST':
-        f = request.files['file']
-        filename = request.form.get('fname')
-        filename = filename.replace(" ", "_")
-        extension = os.path.splitext(f.filename)[1]
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        print("\nExtracted Nutritional Facts:\n", nutrition_facts)
-        return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH)) 
+        return render_template('uploadV2.html',labels=labels)
 
 if __name__ == '__main__':
     reset()

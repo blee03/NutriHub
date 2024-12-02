@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,35 +12,51 @@
             display: flex;
             min-height: 100vh;
             flex-direction: column;
-            background-color: #1b2838; /* Steam dark gray */
-            color: #c7d5e0; /* Steam light gray */
+            background-color: #1b2838;
+            /* Steam dark gray */
+            color: #c7d5e0;
+            /* Steam light gray */
         }
+
         main {
             flex: 1 0 auto;
         }
+
         .container {
             margin-top: 50px;
         }
+
         .file-path-wrapper {
             margin-bottom: 20px;
         }
+
         .uploaded-files {
             margin-top: 30px;
         }
+
         .nav-wrapper {
-            background-color: #171a21; /* Steam darker gray */
+            background-color: #171a21;
+            /* Steam darker gray */
         }
-        .btn, .btn:hover {
-            background-color: #2a475e; /* Steam button color */
-        }
+
+        .btn,
         .btn:hover {
-            background-color: #1b2838; /* Steam button hover color */
+            background-color: #2a475e;
+            /* Steam button color */
         }
+
+        .btn:hover {
+            background-color: #1b2838;
+            /* Steam button hover color */
+        }
+
         .page-footer {
-            background-color: #171a21; /* Steam footer color */
+            background-color: #171a21;
+            /* Steam footer color */
         }
     </style>
 </head>
+
 <body>
     <nav>
         <div class="nav-wrapper" style="background-color: #171a21;">
@@ -55,7 +72,7 @@
         <div class="container">
             <h4>Upload Label</h4><br>
             <form action="/resultv2" method="post" enctype="multipart/form-data">
-                
+
                 <div class="file-field input-field">
                     <div class="btn">
                         <span>File</span>
@@ -74,16 +91,35 @@
                 </button>
 
             </form>
-            
+
             <br>
 
             <div class="uploaded-files">
-                <h5>Uploaded Files</h5>
+                <h5>Labels</h5>
                 <ul id="fileList" class="collection">
                 </ul>
-                    {% for file in fileList %}
-                    <p>{{ file }} </p>
-                    {% endfor %}
+                <table class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Calories</th>
+                            <th>Fat</th>
+                            <th>Carbs</th>
+                            <th>Protein</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for label in labels %}
+                        <tr>
+                            <td>{{ label['name'] }}</td>
+                            <td>{{ label['calories'] }}</td>
+                            <td>{{ label['fat'] }}</td>
+                            <td>{{ label['carbs'] }}</td>
+                            <td>{{ label['protein'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>
@@ -118,4 +154,5 @@
     </script>
     -->
 </body>
+
 </html>
