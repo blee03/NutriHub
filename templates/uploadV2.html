@@ -11,6 +11,8 @@
             display: flex;
             min-height: 100vh;
             flex-direction: column;
+            background-color: #1b2838; /* Steam dark gray */
+            color: #c7d5e0; /* Steam light gray */
         }
         main {
             flex: 1 0 auto;
@@ -24,12 +26,30 @@
         .uploaded-files {
             margin-top: 30px;
         }
+        .nav-wrapper {
+            background-color: #171a21; /* Steam darker gray */
+        }
+        .btn, .btn:hover {
+            background-color: #2a475e; /* Steam button color */
+        }
+        .btn:hover {
+            background-color: #1b2838; /* Steam button hover color */
+        }
+        .page-footer {
+            background-color: #171a21; /* Steam footer color */
+        }
     </style>
 </head>
 <body>
     <nav>
-        <div class="nav-wrapper">
+        <div class="nav-wrapper" style="background-color: #171a21;">
             <a href="#" class="brand-logo center">NutriHub</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a href="/home">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/set-goal">Set Goal</a></li>
+                <li><a href="/analytics">Analytics</a></li>
+            </ul>
         </div>
     </nav>
     <main>
@@ -63,11 +83,6 @@
             </div>
         </div>
     </main>
-    <footer class="page-footer">
-        <div class="container">
-            © 2023 NutriHub
-        </div>
-    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>

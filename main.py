@@ -49,9 +49,9 @@ def extract_nutritional_facts(image_path):
 def home():
     return render_template('home.html')
 
-@app.route("/settingsv2")
+@app.route("/settingsv3")
 def about():
-    return render_template('settingsV2.html')
+    return render_template('settingsv3.html')
 
 @app.route("/uploadv2")
 def uploadv2():
