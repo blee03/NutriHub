@@ -71,7 +71,7 @@ def extract_nutritional_facts(image_path):
         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
 
     API_URL = "https://vision.googleapis.com/v1/images:annotate"
-    API_KEY = "AIzaSyDnR9KmUc26GHhZVAztv9N6uO3aIEIwim8"  # Replace with your API key
+    API_KEY = ""  # Replace with your API key
 
     headers = {
         "Content-Type": "application/json"
