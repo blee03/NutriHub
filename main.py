@@ -8,6 +8,7 @@ import sqlite3
 from init_db import reset
 import re
 from dotenv import load_dotenv
+from datetime import date
 
 app = Flask(__name__) 
 
@@ -164,7 +165,10 @@ def uploadv2():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template('dashboard.html')
+    conn = get_db_connection()
+    labels = conn.execute('SELECT * FROM label').fetchall()
+    conn.close()
+    return render_template('dashboard.html', labels=labels)
 
 # @app.route("/home")
 # def contact():
@@ -200,8 +204,8 @@ def dashboard():
 #         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
 #         return render_template('upload.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH)) 
 
-@app.route('/resultv2', methods = ['POST'])
-def resultv2():
+@app.route('/addlabel', methods = ['POST'])
+def addlabel():
     if request.method == 'POST':
         f = request.files['file']
         filename = request.form.get('fname')
@@ -213,7 +217,6 @@ def resultv2():
 
         # extract nutritional facts from the image
         nutritional_label = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
-        print(nutritional_label)
 
         # check if the nutritional facts are complete
         if(len(nutritional_label) != 4):
@@ -230,11 +233,39 @@ def resultv2():
                     )
         conn.commit()
         labels = conn.execute('SELECT * FROM label').fetchall()
-        # print the labels to console as a json format
-        print(labels)
         conn.close()
 
         return render_template('uploadV2.html',labels=labels)
+
+@app.route("/addmeal", methods = ['POST'])
+def addmeal():
+    if request.method == 'POST':
+        servings = request.form.get('servings')
+        label = request.form.get('label')
+
+        # connect to the database and insert the meal association
+        conn = get_db_connection()
+        conn.execute("INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
+                    (label, servings, date.today())
+                    )
+        conn.commit()
+
+        # get all meals with the current date and add up all the macros to get the total for the day
+        meals = conn.execute("SELECT * FROM meal WHERE date = ?", (date.today(),)).fetchall()
+        total_calories = 0
+        total_fat = 0
+        total_carbs = 0
+        total_protein = 0
+
+        for meal in meals:
+            label = conn.execute("SELECT * FROM label WHERE id = ?", (meal['label_id'],)).fetchone()
+            total_calories += label['calories'] * meal['servings']
+            total_fat += label['fat'] * meal['servings']
+            total_carbs += label['carbs'] * meal['servings']
+            total_protein += label['protein'] * meal['servings']
+        conn.close()
+    
+    return render_template('dashboard.html', meals = meals, total_calories=total_calories, total_fat=total_fat, total_carbs=total_carbs, total_protein=total_protein)
 
 if __name__ == '__main__':
     reset()

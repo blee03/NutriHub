@@ -71,7 +71,7 @@
     <main>
         <div class="container">
             <h4>Upload Label</h4><br>
-            <form action="/resultv2" method="post" enctype="multipart/form-data">
+            <form action="/addlabel" method="post" enctype="multipart/form-data">
 
                 <div class="file-field input-field">
                     <div class="btn">
@@ -101,21 +101,23 @@
                 <table class="highlight">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Name</th>
                             <th>Calories</th>
-                            <th>Fat</th>
-                            <th>Carbs</th>
-                            <th>Protein</th>
+                            <th>Fat (g)</th>
+                            <th>Carbs (g)</th>
+                            <th>Protein (g)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for label in labels %}
                         <tr>
+                            <td>{{ label['id'] }}</td>
                             <td>{{ label['name'] }}</td>
-                            <td>{{ label['calories'] }}</td>
-                            <td>{{ label['fat'] }}</td>
-                            <td>{{ label['carbs'] }}</td>
-                            <td>{{ label['protein'] }}</td>
+                            <td>{{ label['calories'] }} kcal</td>
+                            <td>{{ label['fat'] }} g</td>
+                            <td>{{ label['carbs'] }} g</td>
+                            <td>{{ label['protein'] }} g</td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -4,5 +4,4 @@ pip
 # App
 flask
 requests
-sqlite3
 python-dotenv

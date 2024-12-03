@@ -87,22 +87,24 @@
                 <div class="card">
                     <div class="card-header">Select Nutritional Label</div>
                     <div class="card-body">
-                        <form>
-                            <select class="form-select" aria-label="Default select example" id="fname" name="fname"
-                                onchange="preview()">
-                                <option selected>Open this select menu</option>
-                                {% for file in fileList %}
-                                <option value={{file}}>{{file}}</option>
-                                {% endfor %}
-                            </select>
-                            <label for="servings">Servings</label>
-                            <input type="number" class="form-control" id="servings" name="servings" min="1" required>
+                        <form action="/addmeal" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for=" nutritionalLabel">Nutritional Label:</label>
+                                <select class="form-control" id="nutritionalLabel" name="label">
+                                    <option selected>Choose a label</option>
+                                    // map over labels to create options
+                                    {% for label in labels %}
+                                    <option value="{{ label['id'] }}">{{ label['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="servings">Servings:</label>
+                                <input type="number" class="form-control" id="servings" name="servings" value="1">
+                                <button type="submit" class="btn btn-custom">Submit</button>
+                            </div>
                         </form>
                     </div>
-                    </form>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Uploaded Image Preview</div>
@@ -124,23 +126,19 @@
                             <tbody>
                                 <tr>
                                     <td>Calories:</td>
-                                    <td><span id="caloriesConsumed"></span> kcal</td>
+                                    <td>{{ total_calories | default(0) }} kcal</td>
                                 </tr>
                                 <tr>
                                     <td>Fat:</td>
-                                    <td><span id="fatConsumed"></span> g</td>
-                                </tr>
-                                <tr>
-                                    <td>Sodium:</td>
-                                    <td><span id="sodiumConsumed"></span> mg</td>
+                                    <td>{{ total_fat | default(0) }} g</td>
                                 </tr>
                                 <tr>
                                     <td>Carbohydrates:</td>
-                                    <td><span id="carbohydratesConsumed"></span> g</td>
+                                    <td>{{ total_carbs | default(0) }} mg</td>
                                 </tr>
                                 <tr>
                                     <td>Protein:</td>
-                                    <td><span id="proteinConsumed"></span> g</td>
+                                    <td>{{ total_protein | default(0) }} g</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -162,10 +160,6 @@
                                     <td><span id="fatGoal"></span> g</td>
                                 </tr>
                                 <tr>
-                                    <td>Sodium Goal:</td>
-                                    <td><span id="sodiumGoal"></span> mg</td>
-                                </tr>
-                                <tr>
                                     <td>Carbohydrates Goal:</td>
                                     <td><span id="carbohydratesGoal"></span> g</td>
                                 </tr>
@@ -179,6 +173,30 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Meals for the Day</div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Servings</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for meal in meals %}
+                                <tr>
+                                    <td>{{ meal['label_id'] }}</td>
+                                    <td>{{ meal['servings'] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
