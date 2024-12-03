@@ -14,5 +14,6 @@ CREATE TABLE meal (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     servings INTEGER NOT NULL,
     label_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
     FOREIGN KEY(label_id) REFERENCES label(id)
 );
