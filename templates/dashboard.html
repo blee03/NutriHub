@@ -248,11 +248,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <script>
 
-            // Placeholder data for goals and consumed nutrients
-            document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
-            document.getElementById('fatGoal').innerText = localStorage.getItem('fat') || '70';
-            document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
-            document.getElementById('proteinGoal').innerText = localStorage.getItem('protein') || '50';
+        // Placeholder data for goals and consumed nutrients
+        document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
+        document.getElementById('fatGoal').innerText = localStorage.getItem('fats') || '70';
+        document.getElementById('sodiumGoal').innerText = localStorage.getItem('sodium') || '2300';
+        document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
+        document.getElementById('proteinGoal').innerText = localStorage.getItem('proteins') || '50';
 
             function preview() {
                 const str = document.getElementById('nutritionalLabel').value;
