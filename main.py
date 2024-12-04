@@ -167,8 +167,26 @@ def uploadv2():
 def dashboard():
     conn = get_db_connection()
     labels = conn.execute('SELECT * FROM label').fetchall()
+
+    # get all meals with the current date and add up all the macros to get the total for the day
+    meals = conn.execute("SELECT * FROM meal WHERE date = ?", (date.today(),)).fetchall()
+    total_calories = 0
+    total_fat = 0
+    total_carbs = 0
+    total_protein = 0
+
+    for meal in meals:
+        label = conn.execute("SELECT * FROM label WHERE id = ?", (meal['label_id'],)).fetchone()
+        total_calories += label['calories'] * meal['servings']
+        total_fat += label['fat'] * meal['servings']
+        total_carbs += label['carbs'] * meal['servings']
+        total_protein += label['protein'] * meal['servings']
     conn.close()
-    return render_template('dashboard.html', labels=labels)
+    
+    if(len(meals) == 0):
+        return render_template('dashboard.html', labels=labels)
+    else:
+        return render_template('dashboard.html', labels=labels, meals = meals, total_calories=total_calories, total_fat=total_fat, total_carbs=total_carbs, total_protein=total_protein)
 
 # @app.route("/home")
 # def contact():
@@ -210,13 +228,12 @@ def addlabel():
         f = request.files['file']
         filename = request.form.get('fname')
         filename = filename.replace(" ", "_")
-        extension = os.path.splitext(f.filename)[1]
 
         # save the file to the static/uploads folder
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
 
         # extract nutritional facts from the image
-        nutritional_label = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
+        nutritional_label = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
 
         # check if the nutritional facts are complete
         if(len(nutritional_label) != 4):
@@ -228,45 +245,61 @@ def addlabel():
 
         # connect to the database and insert the nutritional facts
         conn = get_db_connection()
-        conn.execute("INSERT INTO label (name, calories, fat, carbs, protein) VALUES (?, ?, ?, ?, ?)",
-                    (f.filename, nutritional_label['Calories'], nutritional_label['Total Fat'], nutritional_label['Total Carbohydrate'], nutritional_label['Protein'])
+        conn.execute("INSERT INTO label (name, file_name, calories, fat, carbs, protein) VALUES (?, ?, ?, ?, ?, ?)",
+                    (filename, f.filename, nutritional_label['Calories'], nutritional_label['Total Fat'], nutritional_label['Total Carbohydrate'], nutritional_label['Protein'])
                     )
         conn.commit()
         labels = conn.execute('SELECT * FROM label').fetchall()
         conn.close()
 
-        return render_template('uploadV2.html',labels=labels)
+        return redirect(url_for('uploadv2'))
 
 @app.route("/addmeal", methods = ['POST'])
 def addmeal():
     if request.method == 'POST':
         servings = request.form.get('servings')
         label = request.form.get('label')
+        labelStrip = label.split('%')[0]
 
         # connect to the database and insert the meal association
         conn = get_db_connection()
         conn.execute("INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
-                    (label, servings, date.today())
+                    (labelStrip, servings, date.today())
                     )
         conn.commit()
 
-        # get all meals with the current date and add up all the macros to get the total for the day
-        meals = conn.execute("SELECT * FROM meal WHERE date = ?", (date.today(),)).fetchall()
-        total_calories = 0
-        total_fat = 0
-        total_carbs = 0
-        total_protein = 0
+        # # get all meals with the current date and add up all the macros to get the total for the day
+        # meals = conn.execute("SELECT * FROM meal WHERE date = ?", (date.today(),)).fetchall()
+        # total_calories = 0
+        # total_fat = 0
+        # total_carbs = 0
+        # total_protein = 0
 
-        for meal in meals:
-            label = conn.execute("SELECT * FROM label WHERE id = ?", (meal['label_id'],)).fetchone()
-            total_calories += label['calories'] * meal['servings']
-            total_fat += label['fat'] * meal['servings']
-            total_carbs += label['carbs'] * meal['servings']
-            total_protein += label['protein'] * meal['servings']
-        conn.close()
+        # for meal in meals:
+        #     label = conn.execute("SELECT * FROM label WHERE id = ?", (meal['label_id'],)).fetchone()
+        #     total_calories += label['calories'] * meal['servings']
+        #     total_fat += label['fat'] * meal['servings']
+        #     total_carbs += label['carbs'] * meal['servings']
+        #     total_protein += label['protein'] * meal['servings']
+        # conn.close()
     
-    return render_template('dashboard.html', meals = meals, total_calories=total_calories, total_fat=total_fat, total_carbs=total_carbs, total_protein=total_protein)
+    return redirect(url_for('dashboard'))
 
+@app.route('/updatelabel/<int:label_id>', methods=['POST'])
+def updatelabel(label_id):
+    if request.method == 'POST':
+        calories = request.form.get('calories')
+        fat = request.form.get('fat')
+        carbs = request.form.get('carbs')
+        protein = request.form.get('protein')
+
+        conn = get_db_connection()
+        conn.execute("UPDATE label SET calories = ?, fat = ?, carbs = ?, protein = ? WHERE id = ?",
+                        (calories, fat, carbs, protein, label_id))
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('uploadv2'))
 if __name__ == '__main__':
     reset()
     app.run()

@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS meal;
 CREATE TABLE label (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    file_name TEXT NOT NULL,
     calories INTEGER NOT NULL,
     fat INTEGER NOT NULL,
     protein INTEGER NOT NULL,

@@ -54,6 +54,11 @@
             background-color: #171a21;
             /* Steam footer color */
         }
+
+        input {
+            color: #ffffff;
+            /* White text inside inputs */
+        }
     </style>
 </head>
 
@@ -70,7 +75,9 @@
     </nav>
     <main>
         <div class="container">
-            <h4>Upload Label</h4><br>
+            <h4>Upload Label</h4>
+            <p>This page allows you to upload an image of a nutrition label. You can also view and update the nutritional information of previously uploaded labels.</p>
+            <br>
             <form action="/addlabel" method="post" enctype="multipart/form-data">
 
                 <div class="file-field input-field">
@@ -96,28 +103,53 @@
 
             <div class="uploaded-files">
                 <h5>Labels</h5>
+                <p>Below is a list of labels that have been uploaded to the system. You can update the nutritional information for each label directly in the table.</p>
                 <ul id="fileList" class="collection">
                 </ul>
                 <table class="highlight">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
+                            <th>Label Name</th>
+                            <th>File Name</th>
                             <th>Calories</th>
                             <th>Fat (g)</th>
                             <th>Carbs (g)</th>
                             <th>Protein (g)</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for label in labels %}
                         <tr>
-                            <td>{{ label['id'] }}</td>
-                            <td>{{ label['name'] }}</td>
-                            <td>{{ label['calories'] }} kcal</td>
-                            <td>{{ label['fat'] }} g</td>
-                            <td>{{ label['carbs'] }} g</td>
-                            <td>{{ label['protein'] }} g</td>
+                            <form action="/updatelabel/{{ label['id'] }}" method="post">
+                                <td>{{ label['id'] }}</td>
+                                <td>{{ label['name'] }}</td>
+                                <td>{{ label['file_name'] }}</td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="calories" value="{{ label['calories'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="fat" value="{{ label['fat'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="carbs" value="{{ label['carbs'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="protein" value="{{ label['protein'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn waves-effect waves-light" type="submit">Update</button>
+                                </td>
+                            </form>
                         </tr>
                         {% endfor %}
                     </tbody>

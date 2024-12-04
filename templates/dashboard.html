@@ -64,6 +64,25 @@
         .card-title {
             color: #c7d5e0;
         }
+
+        h3,
+        label,
+        table,
+        th,
+        td,
+        .card-header,
+        .card-body,
+        .nav-link,
+        .navbar-brand,
+        .btn-custom,
+        select {
+            color: #ffffff;
+        }
+
+        input {
+            color: #ffffff;
+            /* White text inside inputs */
+        }
     </style>
 </head>
 
@@ -89,12 +108,13 @@
                     <div class="card-body">
                         <form action="/addmeal" method="post" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for=" nutritionalLabel">Nutritional Label:</label>
-                                <select class="form-control" id="nutritionalLabel" name="label">
-                                    <option selected>Choose a label</option>
-                                    // map over labels to create options
+                                <label for="nutritionalLabel">Nutritional Label:</label>
+                                <select class="form-control" id="nutritionalLabel" name="label" onchange="preview()">
+                                    <option selected disabled>Choose a label</option>
                                     {% for label in labels %}
-                                    <option value="{{ label['id'] }}">{{ label['name'] }}</option>
+                                    <option
+                                        value="{{ label['id'] }}%{{ label['file_name']}}%{{ label['calories']}}%{{ label['fat']}}%{{ label['carbs']}}%{{ label['protein']}}">
+                                        {{ label['name'] }}</option>
                                     {% endfor %}
                                 </select>
                                 <label for="servings">Servings:</label>
@@ -104,13 +124,39 @@
                         </form>
                     </div>
                 </div>
+                <div class="card mt-3">
+                    <div class="card-header">Label Preview</div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td>Calories Goal:</td>
+                                    <td><span id="caloriesPreview"></span> kcal</td>
+                                </tr>
+                                <tr>
+                                    <td>Fat Goal:</td>
+                                    <td><span id="fatPreview"></span> g</td>
+                                </tr>
+                                <tr>
+                                    <td>Carbohydrates Goal:</td>
+                                    <td><span id="carbohydratesPreview"></span> g</td>
+                                </tr>
+                                <tr>
+                                    <td>Protein Goal:</td>
+                                    <td><span id="proteinPreview"></span> g</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">Uploaded Image Preview</div>
+                    <div class="card-header">Uploaded Label Preview</div>
                     <div class="card-body text-center">
-                        <img id="uploadedImage" src="" alt="No image selected" class="img-fluid"
-                            style="max-height: 400px;">
+                        <img id="uploadedImage"
+                            src="https://ecdn.teacherspayteachers.com/thumbitem/Blank-Nutrition-Labels-1908477-1459515634/original-1908477-3.jpg"
+                            alt="No Label selected" class="img-fluid" style="max-height: 400px;">
                     </div>
                 </div>
             </div>
@@ -120,7 +166,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">Total Nutriants Consumed</div>
+                    <div class="card-header">Total Nutrients Consumed</div>
                     <div class="card-body">
                         <table class="table table-borderless">
                             <tbody>
@@ -197,29 +243,37 @@
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script>
 
-        // Placeholder data for goals and consumed nutrients
-        document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
-        document.getElementById('fatGoal').innerText = localStorage.getItem('fat') || '70';
-        document.getElementById('sodiumGoal').innerText = localStorage.getItem('sodium') || '2300';
-        document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
-        document.getElementById('proteinGoal').innerText = localStorage.getItem('protein') || '50';
+            // Placeholder data for goals and consumed nutrients
+            document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
+            document.getElementById('fatGoal').innerText = localStorage.getItem('fat') || '70';
+            document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
+            document.getElementById('proteinGoal').innerText = localStorage.getItem('protein') || '50';
 
-        document.getElementById('caloriesConsumed').innerText = '1500';
-        document.getElementById('fatConsumed').innerText = '50';
-        document.getElementById('sodiumConsumed').innerText = '1800';
-        document.getElementById('carbohydratesConsumed').innerText = '200';
-        document.getElementById('proteinConsumed').innerText = '40';
+            function preview() {
+                const str = document.getElementById('nutritionalLabel').value;
+                const delimiter = "%";
+                const result = str.split(delimiter);
+                if (result.length < 6) {
+                    document.getElementById('caloriesPreview').innerText = '0';
+                    document.getElementById('fatPreview').innerText = '0';
+                    document.getElementById('carbohydratesPreview').innerText = '0';
+                    document.getElementById('proteinPreview').innerText = '0';
+                } else {
+                    document.getElementById('caloriesPreview').innerText = result[2];
+                    document.getElementById('fatPreview').innerText = result[3];
+                    document.getElementById('carbohydratesPreview').innerText = result[4];
+                    document.getElementById('proteinPreview').innerText = result[5];
+                }
 
-        document.getElementById('nutritionalLabel').addEventListener('change', function () {
-            const selectedFile = this.value;
-            document.getElementById('uploadedImage').src = 'static/uploads/' + selectedFile;
-        });
-    </script>
+                const image = document.getElementById('uploadedImage');
+                image.src = 'static/uploads/' + result[1];
+            }
+        </script>
 </body>
 
 </html>
