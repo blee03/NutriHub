@@ -3,3 +3,5 @@ pip
 
 # App
 flask
+requests
+python-dotenv
