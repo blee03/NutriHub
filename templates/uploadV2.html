@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Label - NutriHub</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            background-color: #1b2838;
+            /* Steam dark gray */
+            color: #c7d5e0;
+            /* Steam light gray */
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .file-path-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .uploaded-files {
+            margin-top: 30px;
+        }
+
+        .nav-wrapper {
+            background-color: #171a21;
+            /* Steam darker gray */
+        }
+
+        .btn,
+        .btn:hover {
+            background-color: #2a475e;
+            /* Steam button color */
+        }
+
+        .btn:hover {
+            background-color: #1b2838;
+            /* Steam button hover color */
+        }
+
+        .page-footer {
+            background-color: #171a21;
+            /* Steam footer color */
+        }
+
+        input {
+            color: #ffffff;
+            /* White text inside inputs */
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper" style="background-color: #171a21;">
+            <a href="/" class="brand-logo center">NutriHub</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a href="/dashboard">Add a Meal</a></li>
+                <li><a href="/uploadv2">Upload Label</a></li>
+                <li><a href="/goal">Set a Goal</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <div class="container">
+            <h4>Upload Label</h4>
+            <p>This page allows you to upload an image of a nutrition label. You can also view and update the nutritional information of previously uploaded labels.</p>
+            <br>
+            <form action="/addlabel" method="post" enctype="multipart/form-data">
+
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>File</span>
+                        <input type="file" id="fileInput" name="file" accept="image/*">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Upload an image">
+                    </div>
+                </div>
+
+                <label for="fname">File name:</label>
+                <input type="text" id="fname" name="fname"><br><br>
+
+                <button class="btn waves-effect waves-light" type="submit" value="Upload">Upload
+                    <i class="material-icons right">cloud_upload</i>
+                </button>
+
+            </form>
+
+            <br>
+
+            <div class="uploaded-files">
+                <h5>Labels</h5>
+                <p>Below is a list of labels that have been uploaded to the system. You can update the nutritional information for each label directly in the table.</p>
+                <ul id="fileList" class="collection">
+                </ul>
+                <table class="highlight">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Label Name</th>
+                            <th>File Name</th>
+                            <th>Calories</th>
+                            <th>Fat (g)</th>
+                            <th>Carbs (g)</th>
+                            <th>Protein (g)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for label in labels %}
+                        <tr>
+                            <form action="/updatelabel/{{ label['id'] }}" method="post">
+                                <td>{{ label['id'] }}</td>
+                                <td>{{ label['name'] }}</td>
+                                <td>{{ label['file_name'] }}</td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="calories" value="{{ label['calories'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="fat" value="{{ label['fat'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="carbs" value="{{ label['carbs'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field">
+                                        <input type="number" name="protein" value="{{ label['protein'] }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn waves-effect waves-light" type="submit">Update</button>
+                                </td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const fileName = document.getElementById('fileName').value;
+            const file = fileInput.files[0];
+
+            if (!file) {
+                M.toast({html: 'Please select a file to upload', classes: 'red'});
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                M.toast({html: 'Invalid file type. Please upload an image.', classes: 'red'});
+                return;
+            }
+
+            // Simulate file upload and renaming
+            const listItem = document.createElement('li');
+            listItem.className = 'collection-item';
+            listItem.textContent = fileName || file.name;
+            document.getElementById('fileList').appendChild(listItem);
+
+            M.toast({html: 'File uploaded successfully', classes: 'green'});
+        });
+    </script>
+    -->
+</body>
+
+</html>
