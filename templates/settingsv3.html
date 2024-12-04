@@ -52,6 +52,32 @@
 
         return alert("Goals Updated!");
     }
+    function calculateGoals() {
+        var weight = document.getElementById('weight').value;
+        var height = document.getElementById('height').value;
+        var age = document.getElementById('age').value;
+        var activityLevel = document.getElementById('activity-level').value;
+
+        // Add your calculation logic here
+        let suggestedCalories;
+        suggestedCalories = 10 * weight + 6.25 * height - 5 * age + 5;
+        suggestedCalories *= activityLevel;
+
+        const suggestedProtein = weight * 0.8;
+        const suggestedFat = (suggestedCalories * 0.3) / 9;
+        const suggestedCarbs = (suggestedCalories * 0.5) / 4;
+
+        localStorage.clear();
+        localStorage.setItem("calories", suggestedCalories);
+        localStorage.setItem("fats", suggestedFat);
+        localStorage.setItem("carbohydrates", suggestedCarbs);
+        localStorage.setItem("proteins", suggestedProtein);
+
+        location.reload();
+
+        return alert('Goals calculated based on your biometrics!');
+    }
+    
 </script>
 
 <body>
@@ -136,18 +162,6 @@
             var elems = document.querySelectorAll('select');
             var instances = M.FormSelect.init(elems);
         });
-
-        function calculateGoals() {
-            // Placeholder function for calculating nutritional goals based on biometrics
-            var weight = document.getElementById('weight').value;
-            var height = document.getElementById('height').value;
-            var age = document.getElementById('age').value;
-            var activityLevel = document.getElementById('activity-level').value;
-
-            // Add your calculation logic here
-
-            alert('Goals calculated based on your biometrics!');
-        }
     </script>
 </body>
 
