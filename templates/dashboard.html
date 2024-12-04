@@ -247,33 +247,32 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <script>
-
         // Placeholder data for goals and consumed nutrients
         document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
         document.getElementById('fatGoal').innerText = localStorage.getItem('fats') || '70';
-        document.getElementById('sodiumGoal').innerText = localStorage.getItem('sodium') || '2300';
         document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
         document.getElementById('proteinGoal').innerText = localStorage.getItem('proteins') || '50';
 
-            function preview() {
-                const str = document.getElementById('nutritionalLabel').value;
-                const delimiter = "%";
-                const result = str.split(delimiter);
-                if (result.length < 6) {
-                    document.getElementById('caloriesPreview').innerText = '0';
-                    document.getElementById('fatPreview').innerText = '0';
-                    document.getElementById('carbohydratesPreview').innerText = '0';
-                    document.getElementById('proteinPreview').innerText = '0';
-                } else {
-                    document.getElementById('caloriesPreview').innerText = result[2];
-                    document.getElementById('fatPreview').innerText = result[3];
-                    document.getElementById('carbohydratesPreview').innerText = result[4];
-                    document.getElementById('proteinPreview').innerText = result[5];
-                }
 
-                const image = document.getElementById('uploadedImage');
-                image.src = 'static/uploads/' + result[1];
+        function preview() {
+            const str = document.getElementById('nutritionalLabel').value;
+            const delimiter = "%";
+            const result = str.split(delimiter);
+            if (result.length < 6) {
+                document.getElementById('caloriesPreview').innerText = '0';
+                document.getElementById('fatPreview').innerText = '0';
+                document.getElementById('carbohydratesPreview').innerText = '0';
+                document.getElementById('proteinPreview').innerText = '0';
+            } else {
+                document.getElementById('caloriesPreview').innerText = result[2];
+                document.getElementById('fatPreview').innerText = result[3];
+                document.getElementById('carbohydratesPreview').innerText = result[4];
+                document.getElementById('proteinPreview').innerText = result[5];
             }
+
+            const image = document.getElementById('uploadedImage');
+            image.src = 'static/uploads/' + result[1];
+        }
         </script>
 </body>
 
