@@ -9,6 +9,9 @@ from init_db import reset
 import re
 from dotenv import load_dotenv
 from datetime import date
+import pytesseract
+from PIL import Image
+import re
 
 app = Flask(__name__) 
 
@@ -101,14 +104,31 @@ def extract_nutritional_facts(image_path):
     print(response.json())
     text = response.json()['responses'][0]['textAnnotations'][0]['description']
 
+
+    #tesseract ocr
+    image = Image.open(image_path)
+    text_ocr = pytesseract.image_to_string(image)
+    print("Raw OCR Output:\n", text_ocr)
+
+    patterns_ocr = {
+        'Calories': r'Calories\s+(\d+)'
+    }
+
     patterns = {
-        'Calories': r'Calories\s+(\d+)',
         'Total Fat': r'Total Fat\s+(\d+g)',
         'Total Carbohydrate': r'Total Carbohydrate\s+(\d+g)',
         'Protein': r'Protein\s+(\d+g)'
     }
     
     nutrition_facts = {}
+    nutrition_text = text
+    nutrition_text_ocr = text_ocr
+
+    for nutrient, pattern in patterns_ocr.items():
+        match = re.search(pattern, text_ocr)
+        if match:
+            nutrition_facts[nutrient] = match.group(1)
+
 
     for nutrient, pattern in patterns.items():
         match = re.search(pattern, text)
