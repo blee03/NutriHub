@@ -138,7 +138,6 @@ def extract_nutritional_facts(image_path):
         image = Image.open(image_path)
         text_ocr = pytesseract.image_to_string(image)
         print("Raw OCR Output:\n", text_ocr)
-
         patterns_ocr = {
             'Calories': r'Calories\s+(\d+)'
         }
