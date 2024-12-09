@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Login Page</title>
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('/static/4254694.jpg') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        /* Animated Background Particles */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+            animation: rotateBackground 20s linear infinite;
+        }
+
+        @keyframes rotateBackground {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Glassmorphism Effect for Login Container */
+        .login-container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideIn 1s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Login header */
+        .login-container h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Input field styling */
+        .form-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Button styling */
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Button ripple effect */
+        button:focus::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            from {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Forgot password link */
+        .forgot-password {
+            margin-top: 1rem;
+            display: block;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: white;
+        }
+
+        /* Error message styling */
+        .error {
+            color: rgba(255, 50, 50, 0.9);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 500px) {
+            .login-container {
+                width: 90%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="username" placeholder="User Name" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <div class="form-footer">
+                <label>
+                    <input type="checkbox" name="remember" style="margin-right: 5px;"> Remember Me
+                </label>
+                <a href="/forgot-password" class="forgot-password">Forgot Password?</a>
+            </div>
+            <div class="error" id="error-message">Please fill out all fields!</div>
+            <button type="button" id="loginButton">Login</button>
+        </form>
+    </div>
+
+    <script>
+        const loginButton = document.getElementById('loginButton');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const errorMessage = document.getElementById('error-message');
+
+        // Add click event listener for the login button
+        loginButton.addEventListener('click', () => {
+            // Reset error message
+            errorMessage.style.display = 'none';
+
+            // Validate inputs
+            if (username.value.trim() === '' || password.value.trim() === '') {
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Simulate login success
+            alert('Login successful!');
+        });
+    </script>
+</body>
+</html>
