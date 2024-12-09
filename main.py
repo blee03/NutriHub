@@ -186,6 +186,93 @@ def uploadv2():
 #         nutrition_facts = extract_nutritional_facts(os.path.join(app.config['UPLOAD_FOLDER'], filename + extension))
 #         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
 #         return render_template('uploadV2.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
+@app.route('/get_items', methods=['GET'])
+def get_items():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    # Fetch fruits and vegetables
+    cursor.execute("SELECT name FROM fruits")
+    fruits = [row[0] for row in cursor.fetchall()]
+    cursor.execute("SELECT name FROM vegetables")
+    vegetables = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return jsonify({'fruits': fruits, 'vegetables': vegetables})
+
+@app.route('/get_nutrients', methods=['POST'])
+def get_nutrients():
+    data = request.json
+    item_name = data.get('name')
+    item_type = data.get('type')  # 'fruit' or 'vegetable'
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    if item_type == 'fruit':
+        cursor.execute("SELECT calories, fat, carbs, protein FROM fruits WHERE name = ?", (item_name,))
+    elif item_type == 'vegetable':
+        cursor.execute("SELECT calories, fat, carbs, protein FROM vegetables WHERE name = ?", (item_name,))
+    nutrients = cursor.fetchone()
+    conn.close()
+
+    return jsonify({'calories': nutrients[0], 'fat': nutrients[1], 'carbs': nutrients[2], 'protein': nutrients[3]})
+
+@app.route('/submit_meal', methods=['POST'])
+def submit_meal():
+    data = request.json
+
+    # Validate input data
+    if not data or 'items' not in data or 'label_id' not in data:
+        return jsonify({'status': 'error', 'message': 'Invalid input data'}), 400
+
+    items = data['items']  # List of items
+    label_id = data['label_id']  # Tagging label ID
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    for item in items:
+        name = item.get('name')
+        item_type = item.get('type')
+        servings = item.get('servings', 1)
+
+        if not name or not item_type or servings is None:
+            return jsonify({'status': 'error', 'message': 'Incomplete item data'}), 400
+
+        # Fetch nutrients based on type
+        if item_type == 'fruit':
+            cursor.execute("SELECT calories, fat, carbs, protein FROM fruits WHERE name = ?", (name,))
+            file_name = f"{name.lower()}.png"
+        elif item_type == 'vegetable':
+            cursor.execute("SELECT calories, fat, carbs, protein FROM vegetables WHERE name = ?", (name,))
+            file_name = f"{name.lower()}.png"
+        else:
+            return jsonify({'status': 'error', 'message': 'Invalid item type'}), 400
+
+        nutrients = cursor.fetchone()
+        if not nutrients:
+            return jsonify({'status': 'error', 'message': f'Item {name} not found in database'}), 404
+
+        # Adjust nutrients based on servings
+        adjusted_nutrients = [nutrient * servings for nutrient in nutrients]
+
+        # Insert into label table
+        try:
+            cursor.execute(
+                "INSERT INTO label (name, calories, fat, carbs, protein, file_name) VALUES (?, ?, ?, ?, ?, ?)",
+    (name, *adjusted_nutrients, file_name),
+            )
+        except sqlite3.IntegrityError as e:
+            return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    # Insert into meal table
+    try:
+        cursor.execute("INSERT INTO meal (id) VALUES (?)", (label_id,))
+    except sqlite3.IntegrityError as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({'status': 'success'})
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
