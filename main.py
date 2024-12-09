@@ -187,10 +187,22 @@ def uploadv2():
 #         print("\nExtracted Nutritional Facts:\n", nutrition_facts)
 #         return render_template('uploadV2.html', name = f.filename, fileList = os.listdir(UPLOAD_PATH))
 
-@app.route("/dashboard")
+@app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     conn = get_db_connection()
     labels = conn.execute('SELECT * FROM label').fetchall()
+
+    if request.method == "POST":
+        label_id = request.form.get("nutritional_label")  # Get label ID from form
+        servings = int(request.form.get("servings"))  # Get servings from form
+        
+        if label_id and servings:
+            # Insert new meal into the 'meal' table with today's date
+            conn.execute(
+                "INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
+                (label_id, servings, date.today())
+            )
+            conn.commit()
 
     # get all meals with the current date and add up all the macros to get the total for the day
     meals = conn.execute("SELECT * FROM meal WHERE date = ?", (date.today(),)).fetchall()
