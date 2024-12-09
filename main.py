@@ -101,20 +101,14 @@ def extract_nutritional_facts(image_path):
 
     response = requests.post(API_URL, headers=headers, params={"key": 'AIzaSyCZyeSzrMKvLqB3ub5yUvFvtk8VOp_0654'}, json=data)
     print("API Key:", API_KEY)
-    print(response.json())
+    #print(response.json())
     text = response.json()['responses'][0]['textAnnotations'][0]['description']
 
 
-    #tesseract ocr
-    image = Image.open(image_path)
-    text_ocr = pytesseract.image_to_string(image)
-    print("Raw OCR Output:\n", text_ocr)
-
-    patterns_ocr = {
-        'Calories': r'Calories\s+(\d+)'
-    }
+    
 
     patterns = {
+        'Calories': r'Calories\s+(\d+)',
         'Total Fat': r'Total Fat\s+(\d+g)',
         'Total Carbohydrate': r'Total Carbohydrate\s+(\d+g)',
         'Protein': r'Protein\s+(\d+g)'
@@ -122,18 +116,12 @@ def extract_nutritional_facts(image_path):
     
     nutrition_facts = {}
     nutrition_text = text
-    nutrition_text_ocr = text_ocr
-
-    for nutrient, pattern in patterns_ocr.items():
-        match = re.search(pattern, text_ocr)
-        if match:
-            nutrition_facts[nutrient] = match.group(1)
-
-
+    
     for nutrient, pattern in patterns.items():
         match = re.search(pattern, text)
         if match:
             nutrition_facts[nutrient] = match.group(1)
+
 
     for key, value in nutrition_facts.items():
         try:
@@ -144,6 +132,21 @@ def extract_nutritional_facts(image_path):
         except ValueError:
             print(f"Could not convert value for {key}: '{value}'")
 
+    print(nutrition_facts)
+    if 'Calories' not in nutrition_facts:
+        #tesseract ocr
+        image = Image.open(image_path)
+        text_ocr = pytesseract.image_to_string(image)
+        print("Raw OCR Output:\n", text_ocr)
+        patterns_ocr = {
+            'Calories': r'Calories\s+(\d+)'
+        }
+        nutrition_text_ocr = text_ocr
+
+        for nutrient, pattern in patterns_ocr.items():
+            match = re.search(pattern, text_ocr)
+            if match:
+                nutrition_facts[nutrient] = match.group(1)
     return nutrition_facts
 
 # add a route for the landing page that u just created
