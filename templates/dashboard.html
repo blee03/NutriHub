@@ -124,9 +124,6 @@
                         </form>
                     </div>
                 </div>
-
-                
-
                 <div class="card mt-3">
                     <div class="card-header">Label Preview</div>
                     <div class="card-body">
@@ -159,35 +156,37 @@
                     <div class="card-body text-center">
                         <img id="uploadedImage"
                             src="https://ecdn.teacherspayteachers.com/thumbitem/Blank-Nutrition-Labels-1908477-1459515634/original-1908477-3.jpg"
-                            alt="No Label selected" class="img-fluid" style="max-height: 600px;">
+                            alt="No Label selected" class="img-fluid" style="max-height: 400px;">
                     </div>
                 </div>
             </div>
-            <div class="card mt-3" style="width: 60%; margin: auto;">
-                <div class="card-header text-center">Select Food Item</div>
+            <div class="card mt-3">
+                <div class="card-header">Select Food Item</div>
                 <div class="card-body">
-                    <form method="POST" action="/dashboard">
+                    <form method="POST" action="/add_food_item">
                         <div class="form-group">
-                            <label for="vegetablesDropdown">Vegetables:</label>
-                            <select class="form-control" id="vegetablesDropdown" name="vegetable">
-                                <option value="" selected disabled>Choose a vegetable</option>
+                            <label for="vegetable">Vegetables:</label>
+                            <select class="form-control" id="vegetable" name="vegetable">
+                                <option selected disabled>Choose a vegetable</option>
+                                {% for vegetable in vegetables %}
+                                    <option value="{{ vegetable['id'] }}">{{ vegetable['name'] }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="vegetableServings">Vegetable Servings:</label>
-                            <input type="number" class="form-control" id="vegetableServings" name="vegetable_servings" value="1" min="1" placeholder="Number of vegetables">
-                        </div>
-                        <div class="form-group">
-                            <label for="fruitsDropdown">Fruits:</label>
-                            <select class="form-control" id="fruitsDropdown" name="fruit">
-                                <option value="" selected disabled>Choose a fruit</option>
+                            <label for="fruit">Fruits:</label>
+                            <select class="form-control" id="fruit" name="fruit">
+                                <option selected disabled>Choose a fruit</option>
+                                {% for fruit in fruits %}
+                                    <option value="{{ fruit['id'] }}">{{ fruit['name'] }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="fruitServings">Fruit Servings:</label>
-                            <input type="number" class="form-control" id="fruitServings" name="fruitServings" value="1" min="1" placeholder="Number of fruits">
+                            <label for="servings">Servings:</label>
+                            <input type="number" class="form-control" id="servings" name="servings" value="1" min="1">
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block" id="submitMeal">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
@@ -254,7 +253,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Meals for the Day</div>
-                    <div class="card-body" id="mealsContainer">
+                    <div class="card-body">
                         <table class="table table-borderless">
                             <thead>
                                 <tr>
@@ -304,93 +303,6 @@
             const image = document.getElementById('uploadedImage');
             image.src = 'static/uploads/' + result[1];
         }
-        </script>
-        <script>
-            // Fetch fruits and vegetables data and populate the dropdowns
-            fetch('/get_items')
-                .then(response => response.json())
-                .then(data => {
-                    const fruitsDropdown = document.getElementById('fruitsDropdown');
-                    const vegetablesDropdown = document.getElementById('vegetablesDropdown');
-    
-                    // Populate fruits dropdown
-                    data.fruits.forEach(fruit => {
-                        const option = document.createElement('option');
-                        option.value = fruit;
-                        option.textContent = fruit;
-                        fruitsDropdown.appendChild(option);
-                    });
-    
-                    // Populate vegetables dropdown
-                    data.vegetables.forEach(vegetable => {
-                        const option = document.createElement('option');
-                        option.value = vegetable;
-                        option.textContent = vegetable;
-                        vegetablesDropdown.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error fetching items:', error));
-        </script>
-        <script>
-            const mealsContainer = document.getElementById('mealsContainer');
-            const labelId = new Date().getTime(); // Generate a unique label ID
-        
-            // Fetch and populate dropdowns
-            fetch('/get_items')
-                .then(response => response.json())
-                .then(data => {
-                    const fruitsDropdown = document.getElementById('fruitsDropdown');
-                    const vegetablesDropdown = document.getElementById('vegetablesDropdown');
-        
-                    data.fruits.forEach(fruit => {
-                        const option = document.createElement('option');
-                        option.value = fruit;
-                        option.textContent = fruit;
-                        fruitsDropdown.appendChild(option);
-                    });
-        
-                    data.vegetables.forEach(vegetable => {
-                        const option = document.createElement('option');
-                        option.value = vegetable;
-                        option.textContent = vegetable;
-                        vegetablesDropdown.appendChild(option);
-                    });
-                });
-        
-            // Submit meal
-            document.getElementById('submitMeal').addEventListener('click', () => {
-        const selectedFruit = document.getElementById('fruitsDropdown').value;
-        const selectedVegetable = document.getElementById('vegetablesDropdown').value;
-        const fruitServings = parseFloat(document.getElementById('fruitServings').value || 0);
-        const vegetableServings = parseFloat(document.getElementById('vegetableServings').value || 0);
-
-        const items = [];
-        if (selectedFruit) items.push({ name: selectedFruit, type: 'fruit', servings: fruitServings });
-        if (selectedVegetable) items.push({ name: selectedVegetable, type: 'vegetable', servings: vegetableServings });
-
-        // Validate items before submitting
-        if (items.length === 0) {
-            alert('Please select at least one item with valid servings.');
-            return;
-        }
-
-        fetch('/submit_meal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items, label_id: new Date().getTime() }), // Unique label_id
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    mealsContainer.innerHTML += `<p>Meal submitted: ${JSON.stringify(items)}</p>`;
-                } else {
-                    alert(`Error: ${data.message}`);
-                }
-            })
-            .catch(error => {
-                console.error('Error submitting meal:', error);
-            });
-    });
         </script>
 </body>
 
