@@ -14,7 +14,7 @@ from PIL import Image
 import re
 from datetime import datetime
 app = Flask(__name__) 
-
+app.secret_key = b'\x1a\x8f\xb1\xe3\x9b\xdbW\x9b\xf0N\x13\xf5\x8e\x1cP\xf1\xa4\xc2\x93\xe5\xb9\xe7\xb3\xe5'
 UPLOAD_PATH = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
 
@@ -152,7 +152,32 @@ def extract_nutritional_facts(image_path):
 # add a route for the landing page that u just created
 @app.route("/")
 def home():
-    return render_template('home.html')
+    if "user" in session and session["user"] == "admin":
+        return render_template('home.html')
+    return redirect(url_for("login"))
+    
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        print(f"Username: {username}, Password: {password}")
+
+        # Check hardcoded credentials
+        if username == 'admin' and password == 'password':
+            session['user'] = username
+            return redirect(url_for('home'))
+        else:
+            return render_template('login.html', error="Invalid credentials. Please try again.")
+
+    return render_template('login.html')
+
+
+@app.route('/forgot-password')
+def forgot_password():
+    return "Forgot Password page under construction."
+
 
 @app.route("/goal")
 def about():
