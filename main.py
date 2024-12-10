@@ -12,7 +12,7 @@ from datetime import date
 import pytesseract
 from PIL import Image
 import re
-
+from datetime import datetime
 app = Flask(__name__) 
 
 UPLOAD_PATH = 'static/uploads'
@@ -215,64 +215,80 @@ def get_nutrients():
 
     return jsonify({'calories': nutrients[0], 'fat': nutrients[1], 'carbs': nutrients[2], 'protein': nutrients[3]})
 
-@app.route('/submit_meal', methods=['POST'])
-def submit_meal():
-    data = request.json
+@app.route('/submit_food_item', methods=["POST"])
+def submit_food_item():
+    print("Form submitted to /submit_food_item")
+    conn = get_db_connection()
+    fruit_name = request.form.get("fruit_name")
+    fruit_servings = request.form.get("fruit_servings", 1)
+    vegetable_name = request.form.get("vegetable_name")
+    vegetable_servings = request.form.get("vegetable_servings", 1)
 
-    # Validate input data
-    if not data or 'items' not in data or 'label_id' not in data:
-        return jsonify({'status': 'error', 'message': 'Invalid input data'}), 400
-
-    items = data['items']  # List of items
-    label_id = data['label_id']  # Tagging label ID
-
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-
-    for item in items:
-        name = item.get('name')
-        item_type = item.get('type')
-        servings = item.get('servings', 1)
-
-        if not name or not item_type or servings is None:
-            return jsonify({'status': 'error', 'message': 'Incomplete item data'}), 400
-
-        # Fetch nutrients based on type
-        if item_type == 'fruit':
-            cursor.execute("SELECT calories, fat, carbs, protein FROM fruits WHERE name = ?", (name,))
-            file_name = f"{name.lower()}.png"
-        elif item_type == 'vegetable':
-            cursor.execute("SELECT calories, fat, carbs, protein FROM vegetables WHERE name = ?", (name,))
-            file_name = f"{name.lower()}.png"
-        else:
-            return jsonify({'status': 'error', 'message': 'Invalid item type'}), 400
-
-        nutrients = cursor.fetchone()
-        if not nutrients:
-            return jsonify({'status': 'error', 'message': f'Item {name} not found in database'}), 404
-
-        # Adjust nutrients based on servings
-        adjusted_nutrients = [nutrient * servings for nutrient in nutrients]
-
-        # Insert into label table
-        try:
+    # Validate fruit_servings and vegetable_servings
+    try:
+        fruit_servings = int(fruit_servings)
+        vegetable_servings = int(vegetable_servings)
+    except ValueError:
+        return jsonify({'status': 'error', 'message': 'Invalid servings value'}), 400
+    fruit_name = request.form.get("fruit_name")
+    fruit_name = request.form.get("fruit")
+    vegetable_name = request.form.get("vegetable")
+    print(f"Received fruit_name: {fruit_name}")
+    print(f"Received vegetable_name: {vegetable_name}")
+    # Handle Fruit
+    print(f"Request Form Data: {request.form}")
+    if fruit_name:
+        print("entered fruit name")
+        cursor = conn.execute("SELECT calories, fat, carbs, protein FROM fruits WHERE name = ?", (fruit_name,))
+        fruit_nutrients = cursor.fetchone()
+        if fruit_nutrients:
+            adjusted_nutrients = [nutrient * fruit_servings for nutrient in fruit_nutrients]
             cursor.execute(
                 "INSERT INTO label (name, calories, fat, carbs, protein, file_name) VALUES (?, ?, ?, ?, ?, ?)",
-    (name, *adjusted_nutrients, file_name),
+                (fruit_name, *adjusted_nutrients, f"{fruit_name.lower()}.png"),
             )
-        except sqlite3.IntegrityError as e:
-            return jsonify({'status': 'error', 'message': str(e)}), 500
+            label_id = cursor.lastrowid
+            cursor.execute(
+                "INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
+                (label_id, fruit_servings, date.today()),
+            )
 
-    # Insert into meal table
-    try:
-        cursor.execute("INSERT INTO meal (id) VALUES (?)", (label_id,))
-    except sqlite3.IntegrityError as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-
+    # Handle Vegetable
+    if vegetable_name:
+        cursor = conn.execute("SELECT calories, fat, carbs, protein FROM vegetables WHERE name = ?", (vegetable_name,))
+        vegetable_nutrients = cursor.fetchone()
+        if vegetable_nutrients:
+            adjusted_nutrients = [nutrient * vegetable_servings for nutrient in vegetable_nutrients]
+            cursor.execute(
+                "INSERT INTO label (name, calories, fat, carbs, protein, file_name) VALUES (?, ?, ?, ?, ?, ?)",
+                (vegetable_name, *adjusted_nutrients, f"{vegetable_name.lower()}.png"),
+            )
+            label_id = cursor.lastrowid
+            cursor.execute(
+                "INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
+                (label_id, vegetable_servings, date.today()),
+            )
+    meals = conn.execute("""
+        SELECT 
+            meal.id as meal_id, 
+            meal.servings, 
+            meal.date, 
+            label.name, 
+            label.calories, 
+            label.fat, 
+            label.carbs, 
+            label.protein 
+        FROM meal 
+        JOIN label ON meal.label_id = label.id 
+        WHERE meal.date = ?
+    """, (date.today(),)).fetchall()
+    print(meals)
+    print(f"Fruit Nutrients: {fruit_nutrients}")
+    print(f"Vegetable Nutrients: {vegetable_nutrients}")
     conn.commit()
     conn.close()
 
-    return jsonify({'status': 'success'})
+    return redirect(url_for("dashboard"))
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
@@ -280,32 +296,51 @@ def dashboard():
     labels = conn.execute('SELECT * FROM label').fetchall()
 
     if request.method == "POST":
-        label_id = request.form.get("nutritional_label")  # Get label ID from form
-        servings = int(request.form.get("servings"))  # Get servings from form
-        
-        if label_id and servings:
-            # Insert new meal into the 'meal' table with today's date
-            conn.execute(
-                "INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
-                (label_id, servings, date.today())
-            )
-            conn.commit()
+        if "nutrition_label_submit" in request.form:
+            label_id = request.form.get("nutritional_label")  # Get label ID from form
+            servings = int(request.form.get("servings"))  # Get servings from form
+            try:
+                servings = int(servings)
+            except ValueError:
+                return jsonify({'status': 'error', 'message': 'Invalid servings value'}), 400
 
+            if label_id and servings:
+                # Insert new meal into the 'meal' table with today's date
+                conn.execute(
+                    "INSERT INTO meal (label_id, servings, date) VALUES (?, ?, ?)",
+                    (label_id, servings, date.today())
+                )
+                conn.commit()
+        elif "food_item_submit" in request.form:
+            # Logic for "Select Food Item" form (Redirect to new route)
+            return redirect(url_for("submit_food_item"))
     # get all meals with the current date and add up all the macros to get the total for the day
-    meals = conn.execute("SELECT * FROM meal WHERE date = ?", (date.today(),)).fetchall()
+    meals = conn.execute("""
+        SELECT 
+            meal.id as meal_id, 
+            meal.servings, 
+            meal.date, 
+            label.name, 
+            label.calories, 
+            label.fat, 
+            label.carbs, 
+            label.protein 
+        FROM meal 
+        JOIN label ON meal.label_id = label.id 
+        WHERE meal.date = ?
+    """, (date.today(),)).fetchall()
     total_calories = 0
     total_fat = 0
     total_carbs = 0
     total_protein = 0
 
-    for meal in meals:
-        label = conn.execute("SELECT * FROM label WHERE id = ?", (meal['label_id'],)).fetchone()
-        total_calories += label['calories'] * meal['servings']
-        total_fat += label['fat'] * meal['servings']
-        total_carbs += label['carbs'] * meal['servings']
-        total_protein += label['protein'] * meal['servings']
+    total_calories = sum(meal['calories'] * meal['servings'] for meal in meals)
+    total_fat = sum(meal['fat'] * meal['servings'] for meal in meals)
+    total_carbs = sum(meal['carbs'] * meal['servings'] for meal in meals)
+    total_protein = sum(meal['protein'] * meal['servings'] for meal in meals)
+
     conn.close()
-    
+    print(meals)
     if(len(meals) == 0):
         return render_template('dashboard.html', labels=labels)
     else:
