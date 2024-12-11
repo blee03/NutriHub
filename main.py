@@ -440,7 +440,10 @@ def addlabel():
 @app.route("/addmeal", methods = ['POST'])
 def addmeal():
     if request.method == 'POST':
-        servings = request.form.get('servings')
+        servings = request.form.get('nutrition_label_submit')
+        print(f"Received servings: {servings}")
+        if not servings or not servings.isdigit():
+            return 'Invalid servings value', 400
         label = request.form.get('label')
         labelStrip = label.split('%')[0]
 
