@@ -78,7 +78,7 @@ def extract_nutritional_facts(image_path):
         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
 
     API_URL = "https://vision.googleapis.com/v1/images:annotate"
-    API_KEY = str(os.getenv('AIzaSyCZyeSzrMKvLqB3ub5yUvFvtk8VOp_0654'))  # Replace with your API key
+    API_KEY = str(os.getenv('API KEY'))  # Replace with your API key
 
     headers = {
         "Content-Type": "application/json"
@@ -99,7 +99,7 @@ def extract_nutritional_facts(image_path):
         ]
     }
 
-    response = requests.post(API_URL, headers=headers, params={"key": 'AIzaSyCZyeSzrMKvLqB3ub5yUvFvtk8VOp_0654'}, json=data)
+    response = requests.post(API_URL, headers=headers, params={"key": 'API KEY'}, json=data)
     print("API Key:", API_KEY)
     #print(response.json())
     text = response.json()['responses'][0]['textAnnotations'][0]['description']
