@@ -11,13 +11,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #1b2838;
+            background: url('image2.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: #c7d5e0;
             font-family: 'Roboto', sans-serif;
         }
 
         .navbar {
-            background-color: #171a21;
+            background-color: rgba(23, 26, 33, 0.9);
         }
 
         .navbar-brand {
@@ -42,13 +43,13 @@
         }
 
         .card {
-            background-color: #2a475e;
+            background-color: rgba(42, 71, 94, 0.9);
             border: none;
             margin-bottom: 20px;
         }
 
         .card-header {
-            background-color: #1b2838;
+            background-color: rgba(27, 40, 56, 0.9);
             color: #c7d5e0;
         }
 
@@ -81,14 +82,71 @@
 
         input {
             color: #ffffff;
-            /* White text inside inputs */
+        }
+
+        .table-borderless td {
+            padding: 8px 16px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .shadow {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .d-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flex-item {
+            flex: 1;
+            margin: 5px;
+        }
+
+        .img-fluid {
+            max-height: 900px;
+            width: 100%;
+            object-fit: contain;
+        }
+
+        .col-md-6 .card {
+            width: 100%;
+        }
+
+        .row,
+        .d-flex {
+            margin-bottom: 10px;
+        }
+
+        .flex-item .card {
+            width: 100%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .card-header {
+            font-weight: bold;
+        }
+
+        .btn {
+            background-color: #0dcaf0;
+            border-radius: 5px;
+        }
+
+        .card-select-food {
+            width: 100%;
+            min-height: 550px; /* Further increased height to remove white space */
         }
     </style>
 </head>
 
 <body>
     <nav>
-        <div class="nav-wrapper" style="background-color: #171a21;">
+        <div class="nav-wrapper shadow" style="background-color: rgba(23, 26, 33, 0.9);">
             <a href="/" class="brand-logo center">NutriHub</a>
             <ul id="nav-mobile" class="left hide-on-med-and-down">
                 <li><a href="/dashboard">Add a Meal</a></li>
@@ -99,8 +157,8 @@
     </nav>
 
     <div class="container">
-        <h3 class="text-center">Nutritional Dashboard</h3>
-        <!-- Select Nutritional Label and Add Servings -->
+        <h3 class="text-center shadow" style="color: black;">Nutritional Dashboard</h3>
+
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
@@ -124,8 +182,6 @@
                         </form>
                     </div>
                 </div>
-
-                
 
                 <div class="card mt-3">
                     <div class="card-header">Label Preview</div>
@@ -153,57 +209,61 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Uploaded Label Preview</div>
                     <div class="card-body text-center">
                         <img id="uploadedImage"
                             src="https://ecdn.teacherspayteachers.com/thumbitem/Blank-Nutrition-Labels-1908477-1459515634/original-1908477-3.jpg"
-                            alt="No Label selected" class="img-fluid" style="max-height: 600px;">
+                            alt="No Label selected" class="img-fluid">
                     </div>
-                </div>
-            </div>
-            <div class="card mt-3" style="width: 60%; margin: auto;">
-                <div class="card-header text-center">Select Food Item</div>
-                <div class="card-body">
-                    <form method="POST" action="/submit_food_item">
-                        <div class="form-group">
-                            <label for="vegetablesDropdown">Vegetables:</label>
-                            <select class="form-control" id="vegetablesDropdown" name="vegetable">
-                                <option value="" selected disabled>Choose a vegetable</option>
-                                {% for vegetable in vegetables %}
-                                <option value="{{ vegetable }}">{{ vegetable }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="vegetableServings">Vegetable Servings:</label>
-                            <input type="number" class="form-control" id="vegetableServings" name="vegetable_servings" value="1" min="1" placeholder="Number of vegetables">
-                        </div>
-                        <div class="form-group">
-                            <label for="fruitsDropdown">Fruits:</label>
-                            <select class="form-control" id="fruitsDropdown" name="fruit">
-                                <option value="" selected disabled>Choose a fruit</option>
-                                {% for fruit in fruits %}
-                                <option value="{{ fruit }}">{{ fruit }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="fruitServings">Fruit Servings:</label>
-                            <input type="number" class="form-control" id="fruitServings" name="fruitServings" value="1" min="1" placeholder="Number of fruits">
-                        </div>
-                        <input type="hidden" name="food_item_submit" value="1">
-                        <button type="submit" class="btn btn-primary btn-block" id="submitMeal">Submit</button>
-                    </form>
                 </div>
             </div>
         </div>
 
-        <!-- Goals and Current Total of Nutrients Consumed -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
+        <div class="d-flex">
+            <!-- Select Food Item Section -->
+            <div class="flex-item card-select-food">
+                <div class="card shadow">
+                    <div class="card-header text-center">Select Food Item</div>
+                    <div class="card-body">
+                        <form method="POST" action="/submit_food_item">
+                            <div class="form-group">
+                                <label for="vegetablesDropdown">Vegetables:</label>
+                                <select class="form-control" id="vegetablesDropdown" name="vegetable">
+                                    <option value="" selected disabled>Choose a vegetable</option>
+                                    {% for vegetable in vegetables %}
+                                    <option value="{{ vegetable }}">{{ vegetable }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="vegetableServings">Vegetable Servings:</label>
+                                <input type="number" class="form-control" id="vegetableServings" name="vegetable_servings" value="1" min="1" placeholder="Number of vegetables">
+                            </div>
+                            <div class="form-group">
+                                <label for="fruitsDropdown">Fruits:</label>
+                                <select class="form-control" id="fruitsDropdown" name="fruit">
+                                    <option value="" selected disabled>Choose a fruit</option>
+                                    {% for fruit in fruits %}
+                                    <option value="{{ fruit }}">{{ fruit }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fruitServings">Fruit Servings:</label>
+                                <input type="number" class="form-control" id="fruitServings" name="fruitServings" value="1" min="1" placeholder="Number of fruits">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Nutrients Consumed and Goals Section -->
+            <div class="flex-item">
+                <div class="card shadow">
                     <div class="card-header">Total Nutrients Consumed</div>
                     <div class="card-body">
                         <table class="table table-borderless">
@@ -228,9 +288,8 @@
                         </table>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
+
+                <div class="card shadow mt-3">
                     <div class="card-header">Goals</div>
                     <div class="card-body">
                         <table class="table table-borderless">
@@ -257,9 +316,10 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+
+        <div class="row mt-3">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-header">Meals for the Day</div>
                     <div class="card-body" id="mealsContainer">
                         <table class="table table-borderless">
@@ -277,11 +337,11 @@
                                 {% for meal in meals %}
                                 <tr>
                                     <td>{{ meal['name'] }}</td>
-                <td>{{ meal['servings'] }}</td>
-                <td>{{ meal['calories'] }}</td>
-                <td>{{ meal['fat'] }}</td>
-                <td>{{ meal['carbs'] }}</td>
-                <td>{{ meal['protein'] }}</td>
+                                    <td>{{ meal['servings'] }}</td>
+                                    <td>{{ meal['calories'] }}</td>
+                                    <td>{{ meal['fat'] }}</td>
+                                    <td>{{ meal['carbs'] }}</td>
+                                    <td>{{ meal['protein'] }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -290,20 +350,20 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <script>
-        // Placeholder data for goals and consumed nutrients
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
         document.getElementById('caloriesGoal').innerText = localStorage.getItem('calories') || '2000';
         document.getElementById('fatGoal').innerText = localStorage.getItem('fats') || '70';
         document.getElementById('carbohydratesGoal').innerText = localStorage.getItem('carbohydrates') || '300';
         document.getElementById('proteinGoal').innerText = localStorage.getItem('proteins') || '50';
 
-
         function preview() {
             const str = document.getElementById('nutritionalLabel').value;
             const delimiter = "%";
             const result = str.split(delimiter);
+
             if (result.length < 6) {
                 document.getElementById('caloriesPreview').innerText = '0';
                 document.getElementById('fatPreview').innerText = '0';
@@ -319,94 +379,30 @@
             const image = document.getElementById('uploadedImage');
             image.src = 'static/uploads/' + result[1];
         }
-        </script>
-        <script>
-            // Fetch fruits and vegetables data and populate the dropdowns
-            fetch('/get_items')
-                .then(response => response.json())
-                .then(data => {
-                    const fruitsDropdown = document.getElementById('fruitsDropdown');
-                    const vegetablesDropdown = document.getElementById('vegetablesDropdown');
-    
-                    // Populate fruits dropdown
-                    data.fruits.forEach(fruit => {
-                        const option = document.createElement('option');
-                        option.value = fruit;
-                        option.textContent = fruit;
-                        fruitsDropdown.appendChild(option);
-                    });
-    
-                    // Populate vegetables dropdown
-                    data.vegetables.forEach(vegetable => {
-                        const option = document.createElement('option');
-                        option.value = vegetable;
-                        option.textContent = vegetable;
-                        vegetablesDropdown.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error fetching items:', error));
-        </script>
-        <script>
-            const mealsContainer = document.getElementById('mealsContainer');
-            const labelId = new Date().getTime(); // Generate a unique label ID
-        
-            // Fetch and populate dropdowns
-            fetch('/get_items')
-                .then(response => response.json())
-                .then(data => {
-                    const fruitsDropdown = document.getElementById('fruitsDropdown');
-                    const vegetablesDropdown = document.getElementById('vegetablesDropdown');
-        
-                    data.fruits.forEach(fruit => {
-                        const option = document.createElement('option');
-                        option.value = fruit;
-                        option.textContent = fruit;
-                        fruitsDropdown.appendChild(option);
-                    });
-        
-                    data.vegetables.forEach(vegetable => {
-                        const option = document.createElement('option');
-                        option.value = vegetable;
-                        option.textContent = vegetable;
-                        vegetablesDropdown.appendChild(option);
-                    });
-                });
-        
-            // Submit meal
-            document.getElementById('submitMeal').addEventListener('click', () => {
-        const selectedFruit = document.getElementById('fruitsDropdown').value;
-        const selectedVegetable = document.getElementById('vegetablesDropdown').value;
-        const fruitServings = parseFloat(document.getElementById('fruitServings').value || 0);
-        const vegetableServings = parseFloat(document.getElementById('vegetableServings').value || 0);
-
-        const items = [];
-        if (selectedFruit) items.push({ name: selectedFruit, type: 'fruit', servings: fruitServings });
-        if (selectedVegetable) items.push({ name: selectedVegetable, type: 'vegetable', servings: vegetableServings });
-
-        // Validate items before submitting
-        if (items.length === 0) {
-            alert('Please select at least one item with valid servings.');
-            return;
-        }
-
-        fetch('/submit_meal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items, label_id: new Date().getTime() }), // Unique label_id
-        })
+    </script>
+    <script>
+        fetch('/get_items')
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success') {
-                    mealsContainer.innerHTML += `<p>Meal submitted: ${JSON.stringify(items)}</p>`;
-                } else {
-                    alert(`Error: ${data.message}`);
-                }
+                const fruitsDropdown = document.getElementById('fruitsDropdown');
+                const vegetablesDropdown = document.getElementById('vegetablesDropdown');
+
+                data.fruits.forEach(fruit => {
+                    const option = document.createElement('option');
+                    option.value = fruit;
+                    option.textContent = fruit;
+                    fruitsDropdown.appendChild(option);
+                });
+
+                data.vegetables.forEach(vegetable => {
+                    const option = document.createElement('option');
+                    option.value = vegetable;
+                    option.textContent = vegetable;
+                    vegetablesDropdown.appendChild(option);
+                });
             })
-            .catch(error => {
-                console.error('Error submitting meal:', error);
-            });
-    });
-        </script>
+            .catch(error => console.error('Error fetching items:', error));
+    </script>
 </body>
 
 </html>
